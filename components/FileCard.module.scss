@@ -1,0 +1,162 @@
+.card {
+  background: #1a1a2e;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 12px;
+  transition: all 0.2s ease;
+  cursor: grab;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &.dragging {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    transform: scale(1.02);
+    cursor: grabbing;
+  }
+
+  &.expanded {
+    background: #151525;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dragHandle {
+  color: rgba(255, 255, 255, 0.3);
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: grab;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.order {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ff2d55;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.meta {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2px;
+}
+
+.expandBtn,
+.removeBtn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+}
+
+.removeBtn:hover {
+  background: rgba(233, 69, 96, 0.2);
+  color: #e94560;
+}
+
+.pageSelector {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pageActions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  button {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #ff2d55;
+      color: #ff2d55;
+    }
+  }
+}
+
+.pageGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.pageChip {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 45, 85, 0.5);
+  }
+
+  &.selected {
+    background: #ff2d55;
+    border-color: #ff2d55;
+    color: white;
+    font-weight: 600;
+  }
+}

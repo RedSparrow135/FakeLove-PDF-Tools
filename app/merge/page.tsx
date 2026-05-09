@@ -1,0 +1,395 @@
+'use client'
+
+import { useState, useCallback, useRef } from 'react'
+import Link from 'next/link'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+  useDroppable,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable'
+import { useLanguage } from '@/lib/language'
+import { useProcesses } from '@/lib/processContext'
+import FileCard, { PDFFileData } from '@/components/FileCard'
+import ResultCard from '@/components/ResultCard'
+import styles from './page.module.scss'
+
+const emotionalMessages = [
+  "Drop your PDFs... don't be scared",
+  "Arrange this like your life (if you can)",
+  "More files? We don't judge... much",
+  "Drag around... we promise not to tell",
+  "Your files look lonely... let's unite them",
+]
+
+export default function MergePage() {
+  const { t } = useLanguage()
+  const { addProcess, updateProcess } = useProcesses()
+  const [files, setFiles] = useState<PDFFileData[]>([])
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [result, setResult] = useState<{ url: string; name: string } | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [messageIndex, setMessageIndex] = useState(0)
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const { setNodeRef: setDropZoneRef } = useDroppable({ id: 'workspace' })
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
+
+  const getPageCount = async (file: File): Promise<number> => {
+    try {
+      const arrayBuffer = await file.arrayBuffer()
+      const { PDFDocument } = await import('pdf-lib')
+      const pdf = await PDFDocument.load(arrayBuffer)
+      return pdf.getPageCount()
+    } catch { return 1 }
+  }
+
+  const handleFilesSelected = useCallback(async (newFiles: File[]) => {
+    setError(null)
+    const pdfFiles: PDFFileData[] = []
+    for (const file of newFiles) {
+      const pageCount = await getPageCount(file)
+      const allPages = Array.from({ length: pageCount }, (_, i) => i + 1)
+      pdfFiles.push({
+        id: `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        file,
+        name: file.name,
+        size: file.size,
+        pageCount,
+        selectedPages: allPages,
+      })
+    }
+    setFiles((prev) => [...prev, ...pdfFiles])
+    setMessageIndex((prev) => (prev + 1) % emotionalMessages.length)
+  }, [])
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string)
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    setActiveId(null)
+    if (over && active.id !== over.id) {
+      const oldIndex = files.findIndex((f) => f.id === active.id)
+      const newIndex = files.findIndex((f) => f.id === over.id)
+      setFiles((prev) => arrayMove(prev, oldIndex, newIndex))
+    }
+  }
+
+  const handleRemove = useCallback((id: string) => {
+    setFiles((prev) => prev.filter((f) => f.id !== id))
+  }, [])
+
+  const handleToggleExpand = useCallback((id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id))
+  }, [])
+
+  const handlePageSelect = useCallback((fileId: string, pageNum: number) => {
+    setFiles((prev) =>
+      prev.map((f) => {
+        if (f.id !== fileId) return f
+        const isSelected = f.selectedPages.includes(pageNum)
+        const newPages = isSelected
+          ? f.selectedPages.filter((p) => p !== pageNum)
+          : [...f.selectedPages, pageNum].sort((a, b) => a - b)
+        return { ...f, selectedPages: newPages }
+      })
+    )
+  }, [])
+
+  const handleSortByName = useCallback(() => {
+    setFiles((prev) => [...prev].sort((a, b) => a.name.localeCompare(b.name)))
+  }, [])
+
+  const handleSortBySize = useCallback(() => {
+    setFiles((prev) => [...prev].sort((a, b) => a.size - b.size))
+  }, [])
+
+  const handleAddMore = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || [])
+    if (selectedFiles.length) await handleFilesSelected(selectedFiles)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const handleMerge = useCallback(async () => {
+    const validFiles = files.filter((f) => f.selectedPages.length > 0)
+    if (validFiles.length < 1) {
+      setError(t('merge.error1'))
+      return
+    }
+    setError(null)
+    setIsProcessing(true)
+
+    const totalPages = validFiles.reduce((acc, f) => acc + f.selectedPages.length, 0)
+    const id = addProcess({
+      fileName: `${validFiles.length} files`,
+      operation: 'merge',
+      operationLabel: t('operation.merge'),
+      status: 'processing',
+      progress: 0,
+      originalSize: validFiles.reduce((acc, f) => acc + f.size, 0),
+    })
+
+    let progress = 0
+    const progressInterval = setInterval(() => {
+      progress = Math.min(progress + Math.random() * 20, 90)
+      updateProcess(id, { progress: Math.round(progress) })
+    }, 300)
+
+    try {
+      const formData = new FormData()
+      for (const pf of validFiles) {
+        formData.append('files', pf.file)
+        formData.append('pages', pf.selectedPages.join(','))
+      }
+      const response = await fetch('/api/merge', { method: 'POST', body: formData })
+      if (!response.ok) throw new Error('Merge failed')
+      
+      clearInterval(progressInterval)
+      updateProcess(id, { progress: 100 })
+      
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      
+      updateProcess(id, {
+        status: 'completed',
+        resultUrl: url,
+        resultName: 'merged.pdf',
+        completedAt: Date.now(),
+      })
+      
+      setResult({ url, name: 'merged.pdf' })
+    } catch {
+      clearInterval(progressInterval)
+      updateProcess(id, { status: 'failed', error: t('common.error') })
+      setError(t('common.error'))
+    } finally {
+      setIsProcessing(false)
+    }
+  }, [files, t, addProcess, updateProcess])
+
+  const handleReset = () => {
+    setFiles([])
+    setResult(null)
+    setError(null)
+  }
+
+  const totalPages = files.reduce((acc, f) => acc + f.selectedPages.length, 0)
+  const selectedFiles = files.filter((f) => f.selectedPages.length > 0)
+  const activeFile = activeId ? files.find((f) => f.id === activeId) : null
+
+  if (result) {
+    return (
+      <main className={styles.page}>
+        <div className={styles.background}>
+          <div className={styles.gridLines} />
+          <div className={styles.glowOrb} />
+        </div>
+        <div className={styles.content}>
+          <Link href="/" className={styles.backLink}>{t('common.back')}</Link>
+          <ResultCard
+            title={t('merge.complete')}
+            description={t('merge.desc')}
+            downloadUrl={result.url}
+            fileName={result.name}
+            stats={[
+              { label: t('merge.files'), value: files.length },
+              { label: t('merge.pages'), value: totalPages },
+            ]}
+          />
+          <div className={styles.resultActions}>
+            <button className={styles.resetBtn} onClick={handleReset}>{t('merge.button')}</button>
+            <Link href="/" className={styles.homeLink}>{t('common.goHome')}</Link>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  return (
+    <main className={styles.page}>
+      <div className={styles.background}>
+        <div className={styles.gridLines} />
+        <div className={styles.glowOrb} />
+      </div>
+
+      <div className={styles.content}>
+        <Link href="/" className={styles.backLink}>{t('common.back')}</Link>
+        <h1 className={styles.title}>{t('merge.title')}</h1>
+        <p className={styles.subtitle}>{t('merge.humor')}</p>
+
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className={styles.layout}>
+            <div className={styles.workspace} ref={setDropZoneRef}>
+              {files.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <div className={styles.emptyIcon}>
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="12" y1="18" x2="12" y2="12" />
+                      <line x1="9" y1="15" x2="15" y2="15" />
+                    </svg>
+                  </div>
+                  <p className={styles.emptyText}>{t('merge.drop')}</p>
+                  <p className={styles.emptyHint}>{emotionalMessages[messageIndex]}</p>
+                  <button className={styles.addBtn} onClick={handleAddMore}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Add PDFs
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf"
+                    multiple
+                    onChange={handleFileChange}
+                    hidden
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className={styles.toolbar}>
+                    <div className={styles.badge}>
+                      <span>{files.length}</span> files
+                    </div>
+                    <div className={styles.toolbarActions}>
+                      <button className={styles.sortBtn} onClick={handleSortByName}>
+                        A-Z
+                      </button>
+                      <button className={styles.sortBtn} onClick={handleSortBySize}>
+                        Size
+                      </button>
+                      <button className={styles.addMoreBtn} onClick={handleAddMore}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Add More
+                      </button>
+                    </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf"
+                      multiple
+                      onChange={handleFileChange}
+                      hidden
+                    />
+                  </div>
+
+                  <SortableContext items={files.map((f) => f.id)} strategy={rectSortingStrategy}>
+                    <div className={styles.grid}>
+                      {files.map((file, index) => (
+                        <FileCard
+                          key={file.id}
+                          data={file}
+                          index={index}
+                          isSelected={file.selectedPages.length > 0}
+                          isDragging={activeId === file.id}
+                          onRemove={handleRemove}
+                          onToggleExpand={handleToggleExpand}
+                          onPageSelect={handlePageSelect}
+                          onSelectAll={(id) => {
+                            const f = files.find((x) => x.id === id)
+                            if (f) {
+                              const all = Array.from({ length: f.pageCount }, (_, i) => i + 1)
+                              setFiles((prev) => prev.map((x) => x.id === id ? { ...x, selectedPages: all } : x))
+                            }
+                          }}
+                          onDeselectAll={(id) => {
+                            setFiles((prev) => prev.map((x) => x.id === id ? { ...x, selectedPages: [] } : x))
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </>
+              )}
+            </div>
+
+            <aside className={styles.panel}>
+              <div className={styles.panelHeader}>
+                <h2>{t('merge.title')}</h2>
+                <p className={styles.panelHint}>{t('merge.panelHint')}</p>
+              </div>
+
+              <div className={styles.panelInfo}>
+                <div className={styles.panelStat}>
+                  <span className={styles.panelStatLabel}>{t('merge.files')}</span>
+                  <span className={styles.panelStatValue}>{files.length}</span>
+                </div>
+                <div className={styles.panelStat}>
+                  <span className={styles.panelStatLabel}>Total Pages</span>
+                  <span className={styles.panelStatValue}>{files.reduce((acc, f) => acc + f.pageCount, 0)}</span>
+                </div>
+                <div className={styles.panelStat}>
+                  <span className={styles.panelStatLabel}>{t('merge.selected')}</span>
+                  <span className={styles.panelStatValue}>{totalPages}</span>
+                </div>
+              </div>
+
+              <div className={styles.panelActions}>
+                <button
+                  className={styles.mergeBtn}
+                  onClick={handleMerge}
+                  disabled={selectedFiles.length < 1 || isProcessing}
+                >
+                  {isProcessing ? t('common.processing') : t('merge.button')}
+                </button>
+              </div>
+
+              {error && <div className={styles.error}>{error}</div>}
+            </aside>
+          </div>
+
+          <DragOverlay adjustScale={false}>
+            {activeFile ? (
+              <div className={styles.dragOverlay}>
+                <FileCard
+                  data={activeFile}
+                  index={files.findIndex((f) => f.id === activeFile.id)}
+                  onRemove={() => {}}
+                  onToggleExpand={() => {}}
+                  onPageSelect={() => {}}
+                  onSelectAll={() => {}}
+                  onDeselectAll={() => {}}
+                />
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      </div>
+    </main>
+  )
+}

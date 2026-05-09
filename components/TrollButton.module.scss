@@ -1,0 +1,48 @@
+@import '../styles/variables';
+
+.button {
+  background: linear-gradient(135deg, $primary-color, $accent-color);
+  color: $text-light;
+  border: none;
+  padding: 18px 40px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 40px rgba($primary-color, 0.5);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.evil {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+
+  &:hover {
+    box-shadow: 0 10px 40px rgba(255, 107, 107, 0.5);
+  }
+}
+
+.moving {
+  transition: transform 0.2s ease;
+}
+
+.hint {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: $text-muted;
+  white-space: nowrap;
+  animation: fadeIn 0.2s ease;
+}

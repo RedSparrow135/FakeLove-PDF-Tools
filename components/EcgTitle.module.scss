@@ -1,0 +1,77 @@
+@import '../styles/variables';
+
+.container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+}
+
+.title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 10vw, 6rem);
+  letter-spacing: 6px;
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(
+    135deg,
+    #ff2d55 0%,
+    #e94560 25%,
+    #ff2d55 50%,
+    #c44569 75%,
+    #ff2d55 100%
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientPulse 2.5s ease infinite;
+  text-align: center;
+  padding: 10px 40px;
+  text-shadow: none;
+  filter: drop-shadow(0 0 30px rgba(255, 45, 85, 0.6));
+
+  &::selection {
+    background: $primary-color;
+    color: white;
+  }
+}
+
+.ecgCanvas {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 500px;
+  height: 40px;
+  opacity: 0.9;
+}
+
+.ecgLine {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba($primary-color, 0.8) 20%,
+    rgba($primary-color, 0.8) 80%,
+    transparent 100%
+  );
+  border-radius: 2px;
+}
+
+@keyframes gradientPulse {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: drop-shadow(0 0 25px rgba(255, 45, 85, 0.5));
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: drop-shadow(0 0 40px rgba(255, 45, 85, 0.8));
+  }
+}

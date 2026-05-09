@@ -1,0 +1,64 @@
+.dropZone {
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 40px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.02);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  &.active {
+    border-color: #ff2d55;
+    background: rgba(255, 45, 85, 0.1);
+    transform: scale(1.02);
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.content {
+  text-align: center;
+  pointer-events: none;
+}
+
+.icon {
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 16px;
+  animation: bounce 2s infinite;
+
+  svg {
+    display: inline-block;
+  }
+}
+
+.text {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8px;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}

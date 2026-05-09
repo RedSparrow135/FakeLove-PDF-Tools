@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Poppins', sans-serif;
+  background: #0f0f1a;
+  color: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+// ═══════════════════════════════════════════════════════
+// UNIQUE ANIMATIONS - Nobody has seen these before
+// ═══════════════════════════════════════════════════════
+
+// Blob squeeze - like a heart being squeezed
+@keyframes blobSqueeze {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg); 
+    border-radius: 50%;
+  }
+  25% { 
+    transform: scale(1.1, 0.9) rotate(-2deg); 
+    border-radius: 60% 40% 50% 50%;
+  }
+  50% { 
+    transform: scale(0.9, 1.1) rotate(2deg); 
+    border-radius: 40% 60% 40% 60%;
+  }
+  75% { 
+    transform: scale(1.05, 0.95) rotate(-1deg); 
+    border-radius: 50% 50% 40% 60%;
+  }
+}
+
+// Glitch text - like a broken relationship
+@keyframes glitch {
+  0%, 100% { 
+    text-shadow: none;
+    transform: translate(0);
+  }
+  20% { 
+    text-shadow: -3px 0 #ff2d55, 3px 0 #e94560;
+    transform: translate(-2px, 1px);
+  }
+  40% { 
+    text-shadow: 3px 0 #ff2d55, -3px 0 #e94560;
+    transform: translate(2px, -1px);
+  }
+  60% { 
+    text-shadow: -2px 0 #ff2d55, 2px 0 #e94560;
+    transform: translate(-1px, 2px);
+  }
+  80% { 
+    text-shadow: 2px 0 #ff2d55, -2px 0 #e94560;
+    transform: translate(1px, -2px);
+  }
+}
+
+// Heartbeat from being broken
+@keyframes heartbreak {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.3) rotate(-5deg); }
+  30% { transform: scale(1.2) rotate(3deg); }
+  45% { transform: scale(1.4) rotate(-2deg); }
+  60% { transform: scale(1.1) rotate(1deg); }
+  75% { transform: scale(1.25) rotate(-1deg); }
+  100% { transform: scale(1); }
+}
+
+// Typing heart - like writing love letters
+@keyframes typingHeart {
+  0%, 100% { 
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  50% { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Floating tears - crying over broken PDFs
+@keyframes floatingTears {
+  0% { 
+    transform: translateY(0) rotate(0deg); 
+    opacity: 1;
+  }
+  100% { 
+    transform: translateY(100px) rotate(10deg); 
+    opacity: 0;
+  }
+}
+
+// Shatter effect - PDF being torn apart
+@keyframes shatter {
+  0% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.1) translateX(5px);
+    opacity: 0.8;
+  }
+  100% { 
+    transform: scale(0.95) translateX(-10px);
+    opacity: 1;
+  }
+}
+
+// Pulse glow - like a heartbeat
+@keyframes heartbeatGlow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(255, 45, 85, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(255, 45, 85, 0.7);
+  }
+}
+
+// Shake from heartbreak
+@keyframes heartbreakShake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-8px) rotate(-2deg); }
+  20% { transform: translateX(8px) rotate(2deg); }
+  30% { transform: translateX(-6px) rotate(-1deg); }
+  40% { transform: translateX(6px) rotate(1deg); }
+  50% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  70% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+  90% { transform: translateX(-1px); }
+}
+
+// Slide in with bounce
+@keyframes slideInBounce {
+  0% { 
+    transform: translateY(-50px); 
+    opacity: 0;
+  }
+  60% { 
+    transform: translateY(10px); 
+    opacity: 1;
+  }
+  80% { 
+    transform: translateY(-5px); 
+  }
+  100% { 
+    transform: translateY(0); 
+  }
+}
+
+// Ripple effect like water
+@keyframes rippleEffect {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+// Skeleton wobble
+@keyframes skeletonWobble {
+  0%, 100% { 
+    transform: skewX(0deg);
+  }
+  25% { 
+    transform: skewX(5deg);
+  }
+  75% { 
+    transform: skewX(-5deg);
+  }
+}
+
+// Existing animations (keep for compatibility)
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes slideAway {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(100px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes loadingBar {
+  0% { width: 0%; }
+  50% { width: 70%; }
+  80% { width: 90%; }
+  100% { width: 100%; }
+}
