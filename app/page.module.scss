@@ -962,54 +962,43 @@
 .footerDev {
   display: flex;
   align-items: center;
-  gap: 12px;
-  position: relative;
+  gap: 14px;
 }
 
 .footerDevText {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  z-index: 2;
 }
 
 .footerDevName {
   font-family: 'Orbitron', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #dc2626;
+  color: #FF3B3B;
   letter-spacing: 2px;
-  text-shadow: 0 0 12px rgba(220, 38, 38, 0.8);
 }
 
 .footerDevTagline {
   font-family: 'Rajdhani', sans-serif;
   font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.45);
   letter-spacing: 0.5px;
 }
 
-.footerHeartWrapper {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .footerHeart {
-  width: 48px;
+  width: 36px;
   height: auto;
   aspect-ratio: 1;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  filter: sepia(100%) saturate(200%) hue-rotate(-5deg);
-  animation: heartPulse 1.8s ease-in-out infinite;
+  filter: sepia(100%) saturate(150%) hue-rotate(-10deg) drop-shadow(0 0 4px rgba(255, 61, 61, 0.3));
+  animation: heartPulse 1.6s ease-in-out infinite;
 }
 
 @keyframes heartPulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.03); }
+  50% { transform: scale(1.04); }
 }
 
 .footerDev {
