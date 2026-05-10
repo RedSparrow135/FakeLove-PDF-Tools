@@ -492,27 +492,23 @@ export default function DashboardPage() {
         </div>
 
         <footer className={styles.footer}>
-          <div className={styles.footerInner}>
-            <div className={styles.footerSection}>
-              <span className={styles.footerBrand}>FAKE LOVE</span>
-            </div>
-            
-            <div className={styles.footerSection}>
-              <span className={styles.footerTagline}>Sin límites. Sin sentimientos.</span>
-              <div className={styles.footerBinary}>
-                <span>01000110 01000001 01001011</span>
-                <span>01000101 00100000 01001100</span>
-              </div>
-            </div>
-            
-            <div className={styles.footerSection}>
-              <div className={styles.footerDev}>
-                <img src="/heart.png" alt="heart" className={styles.footerHeart} />
-                <div className={styles.footerDevInfo}>
-                  <span className={styles.footerDevName}>Charle-X</span>
-                  <span className={styles.footerDevTagline}>Hecho con odio</span>
-                </div>
-              </div>
+          <span className={styles.footerBrand}>FAKE LOVE</span>
+          <span className={styles.footerDivider}>|</span>
+          <span className={styles.footerTagline}>Sin límites. Sin sentimientos.</span>
+          <span className={styles.footerDivider}>|</span>
+          
+          <div className={styles.footerBinary}>
+            <span>01000110 01000001 01001011</span>
+            <span>01000101 00100000 01001100</span>
+          </div>
+          
+          <span className={styles.footerDivider}>|</span>
+          
+          <div className={styles.footerDev}>
+            <img src="/heart.png" alt="heart" className={styles.footerHeart} />
+            <div className={styles.footerDevInfo}>
+              <span className={styles.footerDevName}>Charle-X</span>
+              <span className={styles.footerDevTagline}>Hecho con odio</span>
             </div>
           </div>
         </footer>
