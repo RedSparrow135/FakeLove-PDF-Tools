@@ -492,9 +492,10 @@ export default function DashboardPage() {
         </div>
 
         <footer className={styles.footer}>
-          <span className={styles.footerBrand}>FAKE LOVE</span>
-          <span className={styles.footerDivider}>|</span>
-          <span className={styles.footerTagline}>Sin límites. Sin sentimientos.</span>
+          <div className={styles.footerBrandSection}>
+            <span className={styles.footerBrand}>Fake Love</span>
+            <span className={styles.footerSubtitle}>PDF Tools</span>
+          </div>
           <span className={styles.footerDivider}>|</span>
           
           <div className={styles.footerBinary}>
