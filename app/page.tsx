@@ -491,7 +491,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <footer className={styles.footer}>
+<footer className={styles.footer}>
           <div className={styles.footerBrandSection}>
             <span className={styles.footerBrand}>Fake Love</span>
             <span className={styles.footerSubtitle}>PDF Tools</span>
