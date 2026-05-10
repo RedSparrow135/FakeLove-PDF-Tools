@@ -984,13 +984,37 @@
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   vertical-align: middle;
-  filter: sepia(100%) saturate(150%) hue-rotate(-10deg) drop-shadow(0 0 3px rgba(255, 61, 61, 0.2));
-  animation: heartPulse 1.8s ease-in-out infinite;
+  filter: 
+    brightness(0) 
+    invert(1) 
+    sepia(100%) 
+    saturate(400%) 
+    hue-rotate(-15deg)
+    drop-shadow(0 0 12px rgba(255, 59, 59, 0.9));
+  animation: heartGlow 1.5s ease-in-out infinite;
 }
 
-@keyframes heartPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.03); }
+@keyframes heartGlow {
+  0%, 100% { 
+    transform: scale(1);
+    filter: 
+      brightness(0) 
+      invert(1) 
+      sepia(100%) 
+      saturate(400%) 
+      hue-rotate(-15deg)
+      drop-shadow(0 0 12px rgba(255, 59, 59, 0.8));
+  }
+  50% { 
+    transform: scale(1.05);
+    filter: 
+      brightness(0) 
+      invert(1) 
+      sepia(100%) 
+      saturate(500%) 
+      hue-rotate(-15deg)
+      drop-shadow(0 0 20px rgba(255, 59, 59, 1));
+  }
 }
 
 .footerBinary {
