@@ -940,9 +940,36 @@
 }
 
 .footerHeart {
-  width: 20px;
-  height: 18px;
-  animation: heartbeat 1.2s ease-in-out infinite;
+  width: 32px;
+  height: 32px;
+}
+
+.footerDev {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footerDevInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.footerDevName {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #dc2626;
+  text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+  letter-spacing: 2px;
+}
+
+.footerDevTagline {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 1px;
 }
 
 @keyframes heartbeat {
@@ -1087,7 +1114,7 @@
 /* ========== FAB ========== */
 .fab {
   position: fixed;
-  bottom: 32px;
+  bottom: 140px;
   right: 32px;
   width: 56px;
   height: 56px;

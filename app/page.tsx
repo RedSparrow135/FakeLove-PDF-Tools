@@ -497,10 +497,6 @@ export default function DashboardPage() {
           <span className={styles.footerTagline}>Sin límites. Sin sentimientos.</span>
           <span className={styles.footerDivider}>|</span>
           
-          <img src="/heart.png" alt="heart" className={styles.footerHeart} />
-
-          <span className={styles.footerDivider}>|</span>
-          
           <div className={styles.footerBinary}>
             <span>01000110 01000001 01001011</span>
             <span>01000101 00100000 01001100</span>
@@ -509,8 +505,11 @@ export default function DashboardPage() {
           <span className={styles.footerDivider}>|</span>
           
           <div className={styles.footerDev}>
-            <span className={styles.footerDevName}>Charle-X</span>
-            <span className={styles.footerDevTagline}>Hecho con odio</span>
+            <img src="/heart.png" alt="heart" className={styles.footerHeart} />
+            <div className={styles.footerDevInfo}>
+              <span className={styles.footerDevName}>Charle-X</span>
+              <span className={styles.footerDevTagline}>Hecho con odio</span>
+            </div>
           </div>
         </footer>
       </main>
