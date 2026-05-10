@@ -988,17 +988,37 @@
 }
 
 .footerHeart {
-  width: 42px;
+  width: 38px;
   height: auto;
   aspect-ratio: 1;
-  filter: 
-    brightness(0) 
-    invert(1) 
-    sepia(100%) 
-    saturate(1000%) 
-    hue-rotate(-10deg) 
-    drop-shadow(0 0 12px rgba(220, 38, 38, 0.8));
-  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+.footerDev {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footerDevInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.footerDevName {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #dc2626;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+.footerDevTagline {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.5px;
 }
 
 @keyframes heartbeat {
