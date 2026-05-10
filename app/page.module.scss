@@ -959,15 +959,30 @@
   font-size: 1.2rem;
 }
 
+.footerDev {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footerDevName {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #dc2626;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
 .footerHeart {
-  width: 28px;
+  width: 40px;
   height: auto;
   aspect-ratio: 1;
   filter: 
     sepia(100%) 
     saturate(300%) 
     hue-rotate(-10deg) 
-    drop-shadow(0 0 8px rgba(220, 38, 38, 0.7));
+    drop-shadow(0 0 10px rgba(220, 38, 38, 0.7));
   animation: heartbeat 1.5s ease-in-out infinite;
 }
 
@@ -977,28 +992,6 @@
   30% { transform: scale(1); }
   45% { transform: scale(1.08); }
   60% { transform: scale(1); }
-}
-
-.footerDev {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-direction: row-reverse;
-}
-
-.footerDevInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.footerDevName {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #dc2626;
-  text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
-  letter-spacing: 2px;
 }
 
 .footerDevTagline {

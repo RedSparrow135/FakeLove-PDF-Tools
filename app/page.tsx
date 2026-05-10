@@ -506,10 +506,7 @@ export default function DashboardPage() {
           <span className={styles.footerDivider}>|</span>
           
           <div className={styles.footerDev}>
-            <div className={styles.footerDevInfo}>
-              <span className={styles.footerDevName}>Charle-X</span>
-              <span className={styles.footerDevTagline}>Hecho con odio</span>
-            </div>
+            <span className={styles.footerDevName}>Charle-X</span>
             <img src="/heart.png" alt="heart" className={styles.footerHeart} />
           </div>
         </footer>
