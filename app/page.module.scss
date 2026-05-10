@@ -962,13 +962,15 @@
 .footerDev {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  position: relative;
 }
 
-.footerDevInfo {
+.footerDevText {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
+  z-index: 2;
 }
 
 .footerDevName {
@@ -977,20 +979,59 @@
   font-weight: 600;
   color: #dc2626;
   letter-spacing: 2px;
-  text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+  text-shadow: 0 0 12px rgba(220, 38, 38, 0.8);
 }
 
 .footerDevTagline {
   font-family: 'Rajdhani', sans-serif;
   font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.5);
   letter-spacing: 0.5px;
 }
 
+.footerHeartWrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .footerHeart {
-  width: 28px;
+  width: 64px;
   height: auto;
   aspect-ratio: 1;
+  filter: 
+    brightness(0) 
+    invert(1) 
+    sepia(100%) 
+    saturate(800%) 
+    hue-rotate(-10deg);
+  animation: heartPulse 2s ease-in-out infinite;
+  opacity: 0.9;
+}
+
+@keyframes heartPulse {
+  0%, 100% { 
+    transform: scale(1);
+    filter: 
+      brightness(0) 
+      invert(1) 
+      sepia(100%) 
+      saturate(800%) 
+      hue-rotate(-10deg) 
+      drop-shadow(0 0 8px rgba(220, 38, 38, 0.6));
+  }
+  50% { 
+    transform: scale(1.08);
+    filter: 
+      brightness(0) 
+      invert(1) 
+      sepia(100%) 
+      saturate(1000%) 
+      hue-rotate(-10deg) 
+      drop-shadow(0 0 20px rgba(220, 38, 38, 0.9));
+  }
 }
 
 .footerDev {
