@@ -964,15 +964,26 @@
   height: auto;
   aspect-ratio: 1;
   filter: 
+    sepia(100%) 
+    saturate(300%) 
     hue-rotate(-10deg) 
-    saturate(1.2) 
-    drop-shadow(0 0 6px rgba(220, 38, 38, 0.5));
+    drop-shadow(0 0 8px rgba(220, 38, 38, 0.7));
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.12); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.08); }
+  60% { transform: scale(1); }
 }
 
 .footerDev {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-direction: row-reverse;
 }
 
 .footerDevInfo {
