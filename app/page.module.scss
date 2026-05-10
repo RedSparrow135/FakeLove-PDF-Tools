@@ -962,13 +962,15 @@
 .footerDev {
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: flex-end;
+  gap: 16px;
+  line-height: 1.2;
 }
 
 .footerDevText {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  justify-content: center;
 }
 
 .footerDevName {
@@ -977,6 +979,7 @@
   font-weight: 600;
   color: #FF3B3B;
   letter-spacing: 2px;
+  line-height: 1.3;
 }
 
 .footerDevTagline {
@@ -984,21 +987,24 @@
   font-size: 0.6rem;
   color: rgba(255, 255, 255, 0.45);
   letter-spacing: 0.5px;
+  line-height: 1.2;
 }
 
 .footerHeart {
-  width: 36px;
+  width: 40px;
   height: auto;
   aspect-ratio: 1;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  filter: sepia(100%) saturate(150%) hue-rotate(-10deg) drop-shadow(0 0 4px rgba(255, 61, 61, 0.3));
-  animation: heartPulse 1.6s ease-in-out infinite;
+  vertical-align: middle;
+  filter: sepia(100%) saturate(150%) hue-rotate(-10deg) drop-shadow(0 0 3px rgba(255, 61, 61, 0.2));
+  animation: heartPulse 1.8s ease-in-out infinite;
 }
 
 @keyframes heartPulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.04); }
+  50% { transform: scale(1.03); }
+}
 }
 
 .footerDev {
