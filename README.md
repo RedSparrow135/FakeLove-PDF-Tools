@@ -1,4 +1,4 @@
-# 💔 Fake Love — PDF Suite
+# 💔 FakeLove PDF Tools
 
 **We love your PDFs… but it's fake.**
 
@@ -7,6 +7,7 @@ A parody PDF tool with personality, removing limits and adding drama to your fil
 ![Next.js](https://img.shields.io/badge/Next.js-14.2-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
 ![SCSS](https://img.shields.io/badge/SCSS-Enabled-pink)
+![License](https://img.shields.io/badge/License-MIT-red)
 
 ---
 
@@ -85,7 +86,7 @@ Every feature includes:
 ## 📁 Project Structure
 
 ```
-fake-love/
+FakeLove-PDF-Tools/
 ├── app/                    # Next.js App Router pages
 │   ├── api/               # API routes
 │   ├── compress/          # Compress PDF page
@@ -99,16 +100,11 @@ fake-love/
 ├── lib/                   # Utilities and context
 │   ├── language.tsx       # i18n translations (ES/EN)
 │   └── processContext.tsx # Global process state
+├── documentation/         # Full documentation
 ├── public/                # Static assets
 ├── styles/                # Global styles
 ├── scripts/               # Python helper scripts
 ├── tests/                 # Test files
-├── docs/                  # Documentation
-│   ├── ARCHITECTURE.md    # System architecture
-│   ├── API.md             # Endpoint reference
-│   ├── COMPONENTS.md      # Component library
-│   ├── DEPLOYMENT.md      # Deployment guide
-│   └── CHANGELOG.md       # Version history
 ├── package.json
 └── .gitignore
 ```
@@ -128,11 +124,17 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ## 📖 Documentation
 
-- [CHANGELOG](./docs/CHANGELOG.md) — Version history
-- [Architecture](./docs/ARCHITECTURE.md) — System design and structure
-- [API Reference](./docs/API.md) — Endpoint documentation
-- [Components](./docs/COMPONENTS.md) — Component library
-- [Deployment](./docs/DEPLOYMENT.md) — Deployment guide
+All documentation is in the `documentation/` folder:
+
+- [Getting Started](./documentation/GETTING_STARTED.md) — Quick start guide
+- [Installation](./documentation/INSTALLATION.md) — Detailed installation
+- [Features](./documentation/FEATURES.md) — All features explained
+- [Architecture](./documentation/ARCHITECTURE.md) — System design
+- [API Reference](./documentation/API.md) — API endpoints
+- [Components](./documentation/COMPONENTS.md) — Component library
+- [Deployment](./documentation/DEPLOYMENT.md) — Deployment guide
+- [Troubleshooting](./documentation/TROUBLESHOOTING.md) — Common issues
+- [Changelog](./documentation/CHANGELOG.md) — Version history
 
 ---
 

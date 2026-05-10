@@ -1,12 +1,12 @@
-# 💔 Fake Love — AGENT.md
+# 💔 FakeLove PDF Tools — AGENT.md
 
 ## 🧠 Project Identity
 
-**Name:** Fake Love  
+**Name:** FakeLove PDF Tools  
 **Concept:** "We love your PDFs… but it's fake."  
 **Theme:** Toxic, dramatic, sarcastic relationship with files  
 
-Fake Love is a parody PDF tool that removes limits and adds personality.
+FakeLove PDF Tools is a parody PDF tool that removes limits and adds personality.
 
 We are NOT just a tool.  
 We are an experience.

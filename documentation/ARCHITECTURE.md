@@ -2,7 +2,7 @@
 
 ## System Overview
 
-Fake Love is a Next.js 14 application using the App Router architecture. It provides PDF manipulation tools with a satirical "toxic relationship" theme.
+FakeLove PDF Tools is a Next.js 14 application using the App Router architecture. It provides PDF manipulation tools with a satirical "toxic relationship" theme.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -41,7 +41,7 @@ Fake Love is a Next.js 14 application using the App Router architecture. It prov
 ## Directory Structure
 
 ```
-fake-love/
+FakeLove-PDF-Tools/
 ├── app/                          # App Router (Pages & Layouts)
 │   ├── api/                      # API Routes
 │   │   ├── compress/route.ts     # PDF Compression
@@ -61,7 +61,7 @@ fake-love/
 │   ├── layout.tsx                 # Root Layout
 │   └── page.tsx                  # Home Page
 │
-├── components/                   # Reusable UI Components
+├── components/                   # Reusable UI Components (33 files)
 │   ├── BitFireworks.tsx          # Binary celebration effect
 │   ├── ClientLayout.tsx          # App wrapper with signature
 │   ├── ConvertLoader.tsx         # Conversion loading indicator
@@ -86,13 +86,21 @@ fake-love/
 │   └── globals.scss              # Global styles
 │
 ├── scripts/                      # Python Helper Scripts
-│   └── pdf_to_office.py          # LibreOffice conversion
+│   ├── compress.py               # PDF compression
+│   ├── pdf_to_office.py          # LibreOffice conversion
+│   ├── smart_converter.py        # Smart PDF converter
+│   └── converter.py             # Document to PDF converter
 │
-└── docs/                        # Documentation
-    ├── ARCHITECTURE.md           # This file
-    ├── API.md                    # API documentation
-    ├── COMPONENTS.md             # Component docs
-    └── DEPLOYMENT.md             # Deployment guide
+├── documentation/                # Full Documentation
+│   ├── ARCHITECTURE.md           # This file
+│   ├── API.md                    # API documentation
+│   ├── COMPONENTS.md             # Component docs
+│   ├── DEPLOYMENT.md             # Deployment guide
+│   └── CHANGELOG.md              # Version history
+│
+├── tests/                        # Test Files
+├── package.json
+└── .gitignore
 ```
 
 ---
