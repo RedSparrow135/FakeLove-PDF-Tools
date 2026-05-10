@@ -4,7 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import os from 'os'
 
-const PYTHON_SCRIPT = path.join(process.cwd(), 'converter.py')
+const PYTHON_SCRIPT = path.join(process.cwd(), 'scripts', 'converter.py')
 
 function tempFilePath(ext: string): string {
   return path.join(os.tmpdir(), `fakelove_${Date.now()}.${ext}`)

@@ -4,7 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import os from 'os'
 
-const COMPRESS_SCRIPT = path.join(process.cwd(), 'compress.py')
+const COMPRESS_SCRIPT = path.join(process.cwd(), 'scripts', 'compress.py')
 
 function tempFilePath(ext: string): string {
   return path.join(os.tmpdir(), `fakelove_${Date.now()}.${ext}`)
