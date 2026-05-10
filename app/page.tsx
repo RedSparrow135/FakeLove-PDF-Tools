@@ -497,7 +497,7 @@ export default function DashboardPage() {
           <span className={styles.footerTagline}>Sin límites. Sin sentimientos.</span>
           <span className={styles.footerDivider}>|</span>
           
-          <img src="/footer-heart.svg" alt="heart" className={styles.footerHeart} />
+          <img src="/heart.png" alt="heart" className={styles.footerHeart} />
 
           <span className={styles.footerDivider}>|</span>
           
