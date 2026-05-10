@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 14" fill="none">
+  <style>
+    .heart { fill: #dc2626; }
+    .heart-group { animation: heartbeat 1.2s ease-in-out infinite; transform-origin: center; }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.1); }
+      60% { transform: scale(1); }
+    }
+  </style>
+  <g class="heart-group">
+    <path class="heart" d="M1 2h2v2h-2zM4 1h2v2h-2zM7 1h2v2h-2zM10 2h2v2h-2zM0 4h2v2h-2zM3 4h2v2h-2zM6 4h2v2h-2zM9 4h2v2h-2zM12 4h2v2h-2zM1 6h2v2h-2zM4 6h2v2h-2zM7 6h4v2h-4zM11 6h2v2h-2zM3 8h2v2h-2zM6 8h2v2h-2zM9 8h2v2h-2zM5 10h2v2h-2zM8 10h2v2h-2zM6 12h2v2h-2z"/>
+    <path class="heart" d="M5.5 0.5L6.5 1.5L5.5 2.5" stroke="#030712" stroke-width="0.3" fill="none"/>
+    <path class="heart" d="M8.5 1.5L9.5 0.5L10.5 1.5" stroke="#030712" stroke-width="0.3" fill="none"/>
+    <path class="heart" d="M6.5 4.5L7.5 5.5L8.5 4.5" stroke="#030712" stroke-width="0.3" fill="none"/>
+    <path class="heart" d="M6 6L7 7L8 6" stroke="#030712" stroke-width="0.2" fill="none"/>
+  </g>
+</svg>

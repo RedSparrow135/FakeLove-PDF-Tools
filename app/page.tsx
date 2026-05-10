@@ -497,27 +497,7 @@ export default function DashboardPage() {
           <span className={styles.footerTagline}>Sin límites. Sin sentimientos.</span>
           <span className={styles.footerDivider}>|</span>
           
-          <svg className={styles.footerHeart} viewBox="0 0 15 14">
-            <rect x="1" y="1" width="2" height="2" />
-            <rect x="4" y="0" width="2" height="2" />
-            <rect x="7" y="0" width="2" height="2" />
-            <rect x="10" y="1" width="2" height="2" />
-            <rect x="0" y="3" width="2" height="2" />
-            <rect x="3" y="3" width="2" height="2" />
-            <rect x="6" y="3" width="2" height="2" />
-            <rect x="9" y="3" width="2" height="2" />
-            <rect x="12" y="3" width="2" height="2" />
-            <rect x="1" y="5" width="2" height="2" />
-            <rect x="4" y="5" width="2" height="2" />
-            <rect x="6" y="5" width="4" height="2" />
-            <rect x="11" y="5" width="2" height="2" />
-            <rect x="3" y="7" width="2" height="2" />
-            <rect x="6" y="7" width="2" height="2" />
-            <rect x="9" y="7" width="2" height="2" />
-            <rect x="5" y="9" width="2" height="2" />
-            <rect x="8" y="9" width="2" height="2" />
-            <rect x="6" y="11" width="2" height="2" />
-          </svg>
+          <img src="/footer-heart.svg" alt="heart" className={styles.footerHeart} />
 
           <span className={styles.footerDivider}>|</span>
           

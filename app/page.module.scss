@@ -909,53 +909,60 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 16px 32px;
-  background: linear-gradient(to top, rgba(10, 15, 26, 0.98), rgba(10, 15, 26, 0.95));
-  border-top: 1px solid rgba(220, 38, 38, 0.3);
+  gap: 24px;
+  padding: 24px 32px;
+  background: linear-gradient(to top, rgba(10, 15, 26, 0.99), rgba(10, 15, 26, 0.97));
+  border-top: 1px solid rgba(220, 38, 38, 0.4);
   margin-top: auto;
+  min-height: 90px;
 }
 
 .footerBrand {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 1rem;
   font-weight: 800;
   color: #dc2626;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+  letter-spacing: 2px;
+  text-shadow: 0 0 15px rgba(220, 38, 38, 0.6);
 }
 
 .footerDivider {
   color: #dc2626;
-  opacity: 0.4;
+  opacity: 0.5;
+  font-size: 1.2rem;
 }
 
 .footerTagline {
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   color: #6b7280;
   font-style: italic;
 }
 
 .footerHeart {
-  width: 16px;
-  height: 14px;
-  
-  rect {
-    fill: #dc2626;
-  }
+  width: 20px;
+  height: 18px;
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.1); }
+  60% { transform: scale(1); }
 }
 
 .footerBinary {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   
   span {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.45rem;
+    font-size: 0.55rem;
     color: #00ffff;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     animation: binaryFlicker 2s ease-in-out infinite;
     
     &:nth-child(1) { animation-delay: 0s; }
@@ -972,20 +979,21 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 1px;
+  gap: 4px;
 }
 
 .footerDevName {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: #dc2626;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(220, 38, 38, 0.4);
 }
 
 .footerDevTagline {
-  font-size: 0.55rem;
+  font-size: 0.7rem;
   color: #9ca3af;
   font-style: italic;
 }
