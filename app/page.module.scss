@@ -908,8 +908,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  padding: 20px 32px;
+  gap: 20px;
+  padding: 12px 32px;
   background: linear-gradient(to top, rgba(10, 15, 26, 0.99), rgba(10, 15, 26, 0.95));
   border-top: 1px solid rgba(220, 38, 38, 0.4);
   margin-top: auto;
@@ -919,24 +919,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
 }
 
 .footerBrand {
   font-family: 'Orbitron', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #dc2626;
   text-transform: uppercase;
-  letter-spacing: 6px;
-  text-shadow: 0 0 25px rgba(220, 38, 38, 0.7);
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
 }
 
 .footerSubtitle {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   color: rgba(255, 255, 255, 0.4);
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   text-transform: uppercase;
 }
 
@@ -978,43 +978,17 @@
 }
 
 .footerHeart {
-  width: 40px;
+  width: 32px;
   height: auto;
   aspect-ratio: 1;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  vertical-align: middle;
-  filter: 
-    brightness(0) 
-    invert(1) 
-    sepia(100%) 
-    saturate(400%) 
-    hue-rotate(-15deg)
-    drop-shadow(0 0 12px rgba(255, 59, 59, 0.9));
-  animation: heartGlow 1.5s ease-in-out infinite;
+  animation: heartPulse 1.5s ease-in-out infinite;
 }
 
-@keyframes heartGlow {
-  0%, 100% { 
-    transform: scale(1);
-    filter: 
-      brightness(0) 
-      invert(1) 
-      sepia(100%) 
-      saturate(400%) 
-      hue-rotate(-15deg)
-      drop-shadow(0 0 12px rgba(255, 59, 59, 0.8));
-  }
-  50% { 
-    transform: scale(1.05);
-    filter: 
-      brightness(0) 
-      invert(1) 
-      sepia(100%) 
-      saturate(500%) 
-      hue-rotate(-15deg)
-      drop-shadow(0 0 20px rgba(255, 59, 59, 1));
-  }
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
 .footerBinary {
