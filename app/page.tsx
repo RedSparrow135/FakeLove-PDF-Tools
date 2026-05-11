@@ -502,23 +502,25 @@ export default function DashboardPage() {
                 <div className={styles.settingCard}>
                   <h3>{t('settings.theme')}</h3>
                   <p>{t('settings.themeDesc')}</p>
-                  <div className={styles.themeGrid}>
+                  <select 
+                    className={styles.themeSelect}
+                    value={currentTheme.id}
+                    onChange={(e) => setCurrentTheme(getTheme(e.target.value))}
+                  >
                     {themes.map(theme => (
-                      <button
-                        key={theme.id}
-                        className={`${styles.themeOption} ${currentTheme.id === theme.id ? styles.active : ''}`}
-                        onClick={() => setCurrentTheme(theme)}
-                        title={isSpanish ? theme.nameEs : theme.name}
-                      >
-                        <span 
-                          className={styles.themeColor}
-                          style={{ 
-                            background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary})` 
-                          }}
-                        />
-                        <span className={styles.themeName}>{isSpanish ? theme.nameEs : theme.name}</span>
-                      </button>
+                      <option key={theme.id} value={theme.id}>
+                        {isSpanish ? theme.nameEs : theme.name}
+                      </option>
                     ))}
+                  </select>
+                  <div className={styles.themePreview}>
+                    <span 
+                      className={styles.themePreviewSwatch} 
+                      style={{ background: `linear-gradient(135deg, ${currentTheme.colors.primary}, ${currentTheme.colors.secondary})` }}
+                    />
+                    <span className={styles.themePreviewLabel} style={{ color: currentTheme.colors.text }}>
+                      {isSpanish ? currentTheme.nameEs : currentTheme.name}
+                    </span>
                   </div>
                 </div>
                 <div className={styles.settingCard}>
