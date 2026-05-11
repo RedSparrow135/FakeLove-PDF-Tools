@@ -1,6 +1,5 @@
 'use client'
 
-import TrollButton from '@/components/TrollButton'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
@@ -486,11 +485,6 @@ export default function DashboardPage() {
                   <h3>{t('settings.quality')}</h3>
                   <p>{t('settings.qualityDesc')}</p>
                   <div className={styles.settingValue}>Medium</div>
-                </div>
-                <div className={styles.settingCard} style={{ opacity: 0.5, fontSize: '0.7rem' }}>
-                  <TrollButton isEvil={true} humorText="¡No me tocarás! 😈">
-                    Reset Settings
-                  </TrollButton>
                 </div>
               </div>
             </div>
