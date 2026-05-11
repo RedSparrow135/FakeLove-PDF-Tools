@@ -908,11 +908,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 12px 32px;
+  gap: 16px;
+  padding: 10px 32px;
   background: linear-gradient(to top, rgba(10, 15, 26, 0.99), rgba(10, 15, 26, 0.95));
   border-top: 1px solid rgba(220, 38, 38, 0.4);
   margin-top: auto;
+  min-height: unset;
+  height: auto;
 }
 
 .footerBrandSection {
