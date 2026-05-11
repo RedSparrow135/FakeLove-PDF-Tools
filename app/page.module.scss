@@ -1082,16 +1082,14 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0px;
-  line-height: 1.2;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .footerDevText {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  position: relative;
-  z-index: 2;
 }
 
 .footerDevName {
@@ -1112,13 +1110,11 @@
 }
 
 .footerHeart {
-  width: 64px;
-  height: 40px;
+  width: 40px;
+  height: 32px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  position: relative;
-  z-index: 1;
-  margin-right: -8px;
+  flex-shrink: 0;
   animation: heartPulse 1.5s ease-in-out infinite;
 }
 

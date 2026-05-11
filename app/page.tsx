@@ -550,7 +550,7 @@ export default function DashboardPage() {
           <div className={styles.footerDev}>
             <img src="/heart.png" alt="heart" className={styles.footerHeart} />
             <div className={styles.footerDevText}>
-              <span className={styles.footerDevName}>CHARLE-X</span>
+              <span className={styles.footerDevName}>CHARLES-X</span>
               <span className={styles.footerDevTagline}>Hecho con odio</span>
             </div>
           </div>

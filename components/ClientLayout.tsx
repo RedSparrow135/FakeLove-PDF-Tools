@@ -1,6 +1,7 @@
 'use client'
 
-import DeveloperSignature from '@/components/DeveloperSignature'
+import { LanguageProvider } from '@/lib/language'
+import { ProcessProvider } from '@/lib/processContext'
 
 export default function ClientLayout({
   children,
@@ -8,9 +9,10 @@ export default function ClientLayout({
   children: React.ReactNode
 }) {
   return (
-    <>
-      {children}
-      <DeveloperSignature />
-    </>
+    <LanguageProvider>
+      <ProcessProvider>
+        {children}
+      </ProcessProvider>
+    </LanguageProvider>
   )
 }
