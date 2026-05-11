@@ -908,8 +908,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 10px 32px;
+  gap: 12px;
+  padding: 6px 32px;
   background: linear-gradient(to top, rgba(10, 15, 26, 0.99), rgba(10, 15, 26, 0.95));
   border-top: 1px solid rgba(220, 38, 38, 0.4);
   margin-top: auto;
@@ -921,24 +921,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
+  gap: 0px;
 }
 
 .footerBrand {
   font-family: 'Orbitron', sans-serif;
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: #dc2626;
   text-transform: uppercase;
-  letter-spacing: 4px;
-  text-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+  letter-spacing: 3px;
+  text-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
 }
 
 .footerSubtitle {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 0.55rem;
-  color: rgba(255, 255, 255, 0.4);
-  letter-spacing: 2px;
+  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
