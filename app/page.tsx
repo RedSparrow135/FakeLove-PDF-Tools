@@ -30,9 +30,11 @@ import {
   Table,
   Presentation,
   Monitor,
+  Palette,
 } from 'lucide-react'
 import { useProcesses, operationLabels } from '@/lib/processContext'
 import { useLanguage } from '@/lib/language'
+import { themes, getTheme, Theme } from '@/lib/themes'
 import FileUploader from '@/components/FileUploader'
 import styles from './page.module.scss'
 
@@ -61,6 +63,27 @@ export default function DashboardPage() {
   const { t, lang, setLang, isSpanish } = useLanguage()
   const [activeProcesses, setActiveProcesses] = useState(0)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [currentTheme, setCurrentTheme] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('fakelove-theme')
+      return saved ? getTheme(saved) : getTheme('clinical-dark')
+    }
+    return getTheme('clinical-dark')
+  })
+
+  useEffect(() => {
+    if (currentTheme) {
+      localStorage.setItem('fakelove-theme', currentTheme.id)
+      document.documentElement.style.setProperty('--theme-primary', currentTheme.colors.primary)
+      document.documentElement.style.setProperty('--theme-secondary', currentTheme.colors.secondary)
+      document.documentElement.style.setProperty('--theme-accent', currentTheme.colors.accent)
+      document.documentElement.style.setProperty('--theme-background', currentTheme.colors.background)
+      document.documentElement.style.setProperty('--theme-surface', currentTheme.colors.surface)
+      document.documentElement.style.setProperty('--theme-text', currentTheme.colors.text)
+      document.documentElement.style.setProperty('--theme-text-muted', currentTheme.colors.textMuted)
+      document.documentElement.style.setProperty('--theme-border', currentTheme.colors.border)
+    }
+  }, [currentTheme])
 
   useEffect(() => {
     const active = getActiveProcesses()
@@ -479,7 +502,24 @@ export default function DashboardPage() {
                 <div className={styles.settingCard}>
                   <h3>{t('settings.theme')}</h3>
                   <p>{t('settings.themeDesc')}</p>
-                  <div className={styles.settingValue}>Clinical Dark</div>
+                  <div className={styles.themeGrid}>
+                    {themes.map(theme => (
+                      <button
+                        key={theme.id}
+                        className={`${styles.themeOption} ${currentTheme.id === theme.id ? styles.active : ''}`}
+                        onClick={() => setCurrentTheme(theme)}
+                        title={isSpanish ? theme.nameEs : theme.name}
+                      >
+                        <span 
+                          className={styles.themeColor}
+                          style={{ 
+                            background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary})` 
+                          }}
+                        />
+                        <span className={styles.themeName}>{isSpanish ? theme.nameEs : theme.name}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <div className={styles.settingCard}>
                   <h3>{t('settings.quality')}</h3>
