@@ -982,13 +982,19 @@
 }
 
 .footerHeart {
-  width: 56px;
-  height: 44px;
+  width: 64px;
+  height: 40px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   position: relative;
   z-index: 1;
+  margin-right: -8px;
   animation: heartPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
 @keyframes heartPulse {
