@@ -274,6 +274,11 @@ export default function MergePage() {
         <Link href="/" className={styles.backLink}>{t('common.back')}</Link>
         <h1 className={styles.title}>{t('merge.title')}</h1>
         <p className={styles.subtitle}>{t('merge.humor')}</p>
+        
+        <div className={styles.trialBanner}>
+          <span className={styles.trialBadge}>TRIAL</span>
+          <p>Límite de 4.5MB en Vercel. <strong>Sin límites</strong> en servidor propio: <a href="https://github.com/RedSparrow135/FakeLove-PDF-Tools" target="_blank" rel="noopener noreferrer" className={styles.repoButton}>GitHub</a></p>
+        </div>
 
         <DndContext
           sensors={sensors}

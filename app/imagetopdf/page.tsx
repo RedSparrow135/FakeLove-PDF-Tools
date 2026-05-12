@@ -17,13 +17,22 @@ export default function ImageToPdfPage() {
   const [result, setResult] = useState<{ url: string; name: string; fileCount: number } | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
 
+  const MAX_SIZE = 4.5 * 1024 * 1024
+
   const handleFiles = useCallback((fileList: FileList) => {
-    const validFiles = Array.from(fileList).filter(f => f.type.startsWith('image/'))
+    const validFiles = Array.from(fileList).filter(f => {
+      if (!f.type.startsWith('image/')) return false
+      if (f.size > MAX_SIZE) {
+        setError(`File "${f.name}" is too large. Max: 4.5MB`)
+        return false
+      }
+      return true
+    })
     if (validFiles.length > 0) {
       setFiles(validFiles)
       setError(null)
     } else {
-      setError('Invalid file type')
+      setError('Invalid file type or size')
     }
   }, [])
 
@@ -160,6 +169,11 @@ export default function ImageToPdfPage() {
         <Link href="/" className={styles.backLink}>{t('common.back')}</Link>
         <h1 className={styles.title}>{t('image.title')}</h1>
         <p className={styles.subtitle}>{t('image.humor')}</p>
+
+        <div className={styles.trialBanner}>
+          <span className={styles.trialBadge}>TRIAL</span>
+          <p>Límite de 4.5MB en Vercel. <strong>Sin límites</strong> en servidor propio: <a href="https://github.com/RedSparrow135/FakeLove-PDF-Tools" target="_blank" rel="noopener noreferrer" className={styles.repoButton}>GitHub</a></p>
+        </div>
 
         <div className={styles.container}>
           {files.length === 0 ? (

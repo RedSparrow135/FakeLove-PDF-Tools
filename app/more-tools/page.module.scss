@@ -383,66 +383,91 @@
 }
 
 .trialBanner {
-  background: rgba(251, 191, 36, 0.08);
-  border: 1px solid rgba(251, 191, 36, 0.3);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 32px;
+  background: rgba(251, 191, 36, 0.05);
+  border: 1px solid rgba(251, 191, 36, 0.15);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
   text-align: center;
   animation: fadeIn 0.5s ease;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .trialBadge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  background: rgba(251, 191, 36, 0.2);
-  border: 1px solid rgba(251, 191, 36, 0.4);
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.25);
   border-radius: 50px;
   color: #fbbf24;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin-bottom: 16px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  flex-shrink: 0;
 }
 
 .trialBanner p {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.trialBanner p strong {
   color: #d1d5db;
-  font-size: 0.9rem;
-  margin-bottom: 20px;
-  line-height: 1.6;
 }
 
 .repoButton {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 24px;
-  background: linear-gradient(135deg, #1f2937, #111827);
-  border: 1px solid #374151;
-  border-radius: 12px;
-  color: #f9fafb;
-  font-size: 0.95rem;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #9ca3af;
+  font-size: 0.8rem;
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
   
   svg {
-    color: #f9fafb;
+    color: #9ca3af;
+    width: 16px;
+    height: 16px;
   }
 
   &:hover {
-    background: linear-gradient(135deg, #374151, #1f2937);
-    border-color: #10b981;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
+    background: rgba(55, 65, 81, 0.9);
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #10b981;
+    
+    svg {
+      color: #10b981;
+    }
   }
 }
 
 .trialBanner .repoButton {
   display: flex;
-  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .trialBanner {
+    flex-direction: column;
+    padding: 14px 16px;
+  }
+  
+  .trialBadge {
+    order: -1;
+  }
 }
 
 @media (max-width: 640px) {
