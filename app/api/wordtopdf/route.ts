@@ -5,6 +5,8 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 const MAX_SIZE = 4.5 * 1024 * 1024 // 4.5MB Vercel limit
 
 export async function POST(request: NextRequest) {
+  let tempBuffer: ArrayBuffer | null = null
+  
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File | null
@@ -25,20 +27,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Only DOCX files supported' }, { status: 400 })
     }
 
-    const arrayBuffer = await file.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
+    tempBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(tempBuffer)
 
-    const result = await mammoth.extractRawText({ buffer })
-    const text = result.value
+    let result
+    try {
+      result = await mammoth.extractRawText({ buffer })
+    } catch (mammothErr: any) {
+      console.error('Mammoth error:', mammothErr)
+      return NextResponse.json(
+        { error: 'Cannot read this file. Please use .docx format only (not .doc binary)' },
+        { status: 400 }
+      )
+    }
+    
+    let text = result.value
+    if (!text || text.trim().length === 0) {
+      text = '(Empty document)'
+    }
 
     const pdfDoc = await PDFDocument.create()
     const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman)
 
-    const fontSize = 12
+    const fontSize = 11
     const lineHeight = 14
     const pageHeight = 792
     const pageWidth = 612
-    const margin = 72
+    const margin = 50
     const maxWidth = pageWidth - margin * 2
 
     const lines: string[] = []
@@ -86,19 +101,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const pdfBytes = await pdfDoc.save()
-    const pdfBuffer = Buffer.from(pdfBytes)
+    const pdfBytes: Uint8Array = await pdfDoc.save()
+    const pdfBuffer = Buffer.from(pdfBytes.buffer, pdfBytes.byteOffset, pdfBytes.byteLength)
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBuffer as any, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename=${file.name.replace(/\.[^.]+$/, '.pdf')}`,
       },
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Word to PDF conversion error:', error)
+    const message = error?.message || 'Conversion failed'
     return NextResponse.json(
-      { error: 'Conversion failed. Your Word doc is playing hard to get 💔' },
+      { error: `Oops! ${message.slice(0, 100)} 💔` },
       { status: 500 }
     )
   }
