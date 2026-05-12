@@ -37,6 +37,35 @@ export default function SplitPage() {
   const pageRefs = useRef<Map<number, HTMLDivElement>>(new Map())
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const fileKey = params.get('f')
+    if (fileKey) {
+      const fileData = sessionStorage.getItem(fileKey)
+      if (fileData) {
+        try {
+          const parsed = JSON.parse(fileData)
+          const binaryString = atob(parsed.data)
+          const bytes = new Uint8Array(binaryString.length)
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+          }
+          const file = new File([bytes], parsed.name, { type: parsed.type })
+          if (file.size > MAX_SIZE) {
+            setError(`File too large. Maximum: 4.5MB`)
+          } else {
+            setFile(file)
+            setError(null)
+          }
+          sessionStorage.removeItem(fileKey)
+          window.history.replaceState({}, '', window.location.pathname)
+        } catch (e) {
+          setError('Error loading file')
+        }
+      }
+    }
+  }, [])
+
+  useEffect(() => {
     if (file && !isLoadingPages) {
       loadPages(file)
     }

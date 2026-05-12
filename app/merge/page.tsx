@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import {
   DndContext,
@@ -51,11 +51,6 @@ export default function MergePage() {
 
   const { setNodeRef: setDropZoneRef } = useDroppable({ id: 'workspace' })
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  )
-
   const getPageCount = async (file: File): Promise<number> => {
     try {
       const arrayBuffer = await file.arrayBuffer()
@@ -64,6 +59,52 @@ export default function MergePage() {
       return pdf.getPageCount()
     } catch { return 1 }
   }
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const fileKey = params.get('f')
+    if (fileKey) {
+      const fileData = sessionStorage.getItem(fileKey)
+      if (fileData) {
+        try {
+          const parsed = JSON.parse(fileData)
+          const binaryString = atob(parsed.data)
+          const bytes = new Uint8Array(binaryString.length)
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+          }
+          const file = new File([bytes], parsed.name, { type: parsed.type })
+          
+          if (file.size > MAX_SIZE) {
+            setWarning(`⚠️ "${file.name}" supera el límite de 4.5MB`)
+          } else {
+            getPageCount(file).then((pageCount) => {
+              const allPages = Array.from({ length: pageCount }, (_, i) => i + 1)
+              const newFile: PDFFileData = {
+                id: `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                file,
+                name: file.name,
+                size: file.size,
+                pageCount,
+                selectedPages: allPages,
+              }
+              setFiles((prev) => [...prev, newFile])
+            })
+          }
+          
+          sessionStorage.removeItem(fileKey)
+          window.history.replaceState({}, '', window.location.pathname)
+        } catch (e) {
+          console.error('Error loading file:', e)
+        }
+      }
+    }
+  }, [])
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
 
   const handleFilesSelected = useCallback(async (newFiles: File[]) => {
     setError(null)
