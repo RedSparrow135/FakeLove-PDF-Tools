@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { Upload, X, FileIcon, Eye, ArrowRight, Loader2 } from 'lucide-react'
 import styles from './FileUploader.module.scss'
 import { useLanguage } from '@/lib/language'
@@ -18,6 +18,13 @@ interface FileWithPreview {
 const SUPPORTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp']
 const SUPPORTED_DOC_TYPES = ['application/pdf']
 const ALL_SUPPORTED = [...SUPPORTED_IMAGE_TYPES, ...SUPPORTED_DOC_TYPES]
+const MAX_FILE_SIZE = 4.5 * 1024 * 1024 // 4.5MB - Límite oficial de Vercel
+
+const formatSize = (bytes: number): string => {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
 
 export default function FileUploader({ onFileSelected }: FileUploaderProps) {
   const { t } = useLanguage()
@@ -39,21 +46,9 @@ export default function FileUploader({ onFileSelected }: FileUploaderProps) {
     setIsDragging(false)
   }, [])
 
-  const MAX_FILE_SIZE = 4.5 * 1024 * 1024 // 4.5MB - Límite oficial de Vercel
-
-const formatSize = (bytes: number): string => {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
-}
-
-const formatSizeMB = (bytes: number): string => {
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
-}
-
-const processFile = useCallback((file: File): Promise<FileWithPreview> => {
+  const processFile = useCallback((file: File): Promise<FileWithPreview> => {
     if (file.size > MAX_FILE_SIZE) {
-      alert(`El archivo es demasiado grande. Máximo ${formatSizeMB(MAX_FILE_SIZE)} para Vercel (versión de prueba).`)
+      alert(`El archivo es demasiado grande. Máximo ${formatSize(MAX_FILE_SIZE)} para Vercel (versión de prueba).`)
       return Promise.reject(new Error('File too large'))
     }
     return new Promise((resolve) => {
@@ -81,18 +76,22 @@ const processFile = useCallback((file: File): Promise<FileWithPreview> => {
 
     const files = Array.from(e.dataTransfer.files)
     if (files.length > 0) {
-      const processed = await processFile(files[0])
-      setSelectedFile(processed)
-      setIsOpen(true)
+      try {
+        const processed = await processFile(files[0])
+        setSelectedFile(processed)
+        setIsOpen(true)
+      } catch {}
     }
   }, [processFile])
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files && files.length > 0) {
-      const processed = await processFile(files[0])
-      setSelectedFile(processed)
-      setIsOpen(true)
+      try {
+        const processed = await processFile(files[0])
+        setSelectedFile(processed)
+        setIsOpen(true)
+      } catch {}
     }
   }, [processFile])
 
@@ -127,12 +126,6 @@ const processFile = useCallback((file: File): Promise<FileWithPreview> => {
       window.location.href = `${routes[action]}?file=${encodeURIComponent(selectedFile.file.name)}`
     }, 500)
   }, [selectedFile, onFileSelected])
-
-  const formatSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-  }
 
   const getFileExtension = (filename: string): string => {
     return filename.split('.').pop()?.toUpperCase() || 'FILE'
