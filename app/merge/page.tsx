@@ -154,6 +154,19 @@ export default function MergePage() {
       setError(t('merge.error1'))
       return
     }
+    
+    const totalSize = validFiles.reduce((acc, f) => acc + f.size, 0)
+    if (totalSize > MAX_SIZE) {
+      setError('⚠️ El tamaño total excede 4.5MB. No se puede procesar en Vercel.')
+      return
+    }
+    
+    const oversizedFiles = validFiles.filter(f => f.size > MAX_SIZE)
+    if (oversizedFiles.length > 0) {
+      setError(`⚠️ "${oversizedFiles[0].name}" es muy grande. Límite: 4.5MB`)
+      return
+    }
+    
     setError(null)
     setIsProcessing(true)
 
@@ -180,7 +193,11 @@ export default function MergePage() {
         formData.append('pages', pf.selectedPages.join(','))
       }
       const response = await fetch('/api/merge', { method: 'POST', body: formData })
-      if (!response.ok) throw new Error('Merge failed')
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }))
+        throw new Error(errorData.error || 'Merge failed')
+      }
       
       clearInterval(progressInterval)
       updateProcess(id, { progress: 100 })
@@ -196,10 +213,11 @@ export default function MergePage() {
       })
       
       setResult({ url, name: 'merged.pdf' })
-    } catch {
+    } catch (err) {
       clearInterval(progressInterval)
-      updateProcess(id, { status: 'failed', error: t('common.error') })
-      setError(t('common.error'))
+      const errorMsg = err instanceof Error ? err.message : t('common.error')
+      updateProcess(id, { status: 'failed', error: errorMsg })
+      setError(errorMsg)
     } finally {
       setIsProcessing(false)
     }
