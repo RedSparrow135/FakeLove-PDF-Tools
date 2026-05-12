@@ -1,123 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import mammoth from 'mammoth'
-import PDFDocument from 'pdfkit'
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 
 const MAX_SIZE = 4.5 * 1024 * 1024
-
-function cleanHtmlText(html: string): Array<{ text: string }> {
-  const segments: Array<{ text: string }> = []
-
-  const cleanHtml = html
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/p>/gi, '\n\n')
-    .replace(/<p[^>]*>/gi, '')
-    .replace(/<h[1-6][^>]*>/gi, '')
-    .replace(/<\/h[1-6]>/gi, '\n\n')
-    .replace(/<li[^>]*>/gi, '• ')
-    .replace(/<\/li>/gi, '\n')
-    .replace(/<b>/gi, '').replace(/<\/b>/gi, '')
-    .replace(/<strong>/gi, '').replace(/<\/strong>/gi, '')
-    .replace(/<i>/gi, '').replace(/<\/i>/gi, '')
-    .replace(/<em>/gi, '').replace(/<\/em>/gi, '')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&[a-z]+;/gi, '')
-    .replace(/İ/g, 'I').replace(/ı/g, 'i')
-    .replace(/Ğ/g, 'G').replace(/ğ/g, 'g')
-    .replace(/Ü/g, 'U').replace(/ü/g, 'u')
-    .replace(/Ş/g, 'S').replace(/ş/g, 's')
-    .replace(/Ö/g, 'O').replace(/ö/g, 'o')
-    .replace(/Ç/g, 'C').replace(/ç/g, 'c')
-    .replace(/[^\x00-\x7F]/g, '?')
-
-  const lines = cleanHtml.split('\n')
-  for (const line of lines) {
-    const trimmed = line.trim()
-    if (trimmed) {
-      segments.push({ text: trimmed })
-    } else {
-      segments.push({ text: '\n' })
-    }
-  }
-  return segments
-}
-
-async function generatePdfFromHtml(html: string): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    try {
-      const doc = new PDFDocument({
-        size: 'A4',
-        margins: { top: 72, bottom: 72, left: 72, right: 72 },
-        info: { Title: 'Converted Document' },
-      })
-
-      const chunks: Buffer[] = []
-      doc.on('data', (chunk: Buffer) => chunks.push(chunk))
-      doc.on('end', () => resolve(Buffer.concat(chunks)))
-      doc.on('error', reject)
-
-      const lineHeight = 16
-      const pageHeight = doc.page.height
-      const marginLeft = 72
-      const maxWidth = doc.page.width - marginLeft - 72
-      let y = pageHeight - 100
-
-      doc.fontSize(11)
-
-      const segments = cleanHtmlText(html)
-
-      for (const seg of segments) {
-        if (seg.text === '\n') {
-          y -= lineHeight * 0.8
-          if (y < 100) {
-            doc.addPage()
-            y = pageHeight - 100
-          }
-          continue
-        }
-
-        const text = seg.text
-        const words = text.split(' ')
-        let line = ''
-
-        for (const word of words) {
-          const testLine = line ? `${line} ${word}` : word
-          const testWidth = doc.widthOfString(testLine)
-
-          if (testWidth > maxWidth && line) {
-            if (y < 100) {
-              doc.addPage()
-              y = pageHeight - 100
-            }
-            doc.text(line, marginLeft, y, { width: maxWidth, lineBreak: false })
-            y -= lineHeight
-            line = word
-          } else {
-            line = testLine
-          }
-        }
-
-        if (line) {
-          if (y < 100) {
-            doc.addPage()
-            y = pageHeight - 100
-          }
-          doc.text(line, marginLeft, y, { width: maxWidth, lineBreak: false })
-          y -= lineHeight
-        }
-      }
-
-      doc.end()
-    } catch (err) {
-      reject(err)
-    }
-  })
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -143,17 +28,104 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
 
-    const result = await mammoth.convertToHtml({ buffer })
-    const html = result.value
+    const result = await mammoth.extractRawText({ buffer })
+    let text = result.value
 
-    if (!html || html.trim().length === 0) {
+    if (!text || text.trim().length === 0) {
       return NextResponse.json(
         { error: 'Cannot read this file. Is it a valid DOCX?' },
         { status: 400 }
       )
     }
 
-    const pdfBuffer = await generatePdfFromHtml(html)
+    text = text
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n\n')
+      .replace(/<p[^>]*>/gi, '')
+      .replace(/<h[1-6][^>]*>/gi, '\n')
+      .replace(/<\/h[1-6]>/gi, '\n\n')
+      .replace(/<li[^>]*>/gi, '• ')
+      .replace(/<\/li>/gi, '\n')
+      .replace(/<b>/gi, '').replace(/<\/b>/gi, '')
+      .replace(/<strong>/gi, '').replace(/<\/strong>/gi, '')
+      .replace(/<i>/gi, '').replace(/<\/i>/gi, '')
+      .replace(/<em>/gi, '').replace(/<\/em>/gi, '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/İ/g, 'I').replace(/ı/g, 'i')
+      .replace(/Ğ/g, 'G').replace(/ğ/g, 'g')
+      .replace(/Ü/g, 'U').replace(/ü/g, 'u')
+      .replace(/Ş/g, 'S').replace(/ş/g, 's')
+      .replace(/Ö/g, 'O').replace(/ö/g, 'o')
+      .replace(/Ç/g, 'C').replace(/ç/g, 'c')
+      .replace(/[^\x00-\x7F]/g, '?')
+
+    const pdfDoc = await PDFDocument.create()
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
+
+    const fontSize = 11
+    const lineHeight = 14
+    const pageHeight = 792
+    const pageWidth = 612
+    const marginLeft = 50
+    const marginRight = 50
+    const maxWidth = pageWidth - marginLeft - marginRight
+    const maxY = pageHeight - marginLeft
+    const minY = marginRight
+
+    const paragraphs = text.split(/\n\n+/)
+    const lines: string[] = []
+
+    for (const para of paragraphs) {
+      const words = para.split(/\s+/)
+      let currentLine = ''
+
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word
+        const testWidth = font.widthOfTextAtSize(testLine, fontSize)
+
+        if (testWidth > maxWidth && currentLine) {
+          lines.push(currentLine)
+          currentLine = word
+        } else {
+          currentLine = testLine
+        }
+      }
+      if (currentLine) lines.push(currentLine)
+      lines.push('')
+    }
+
+    let y = maxY
+    let page = pdfDoc.addPage([pageWidth, pageHeight])
+
+    for (const line of lines) {
+      if (line === '') {
+        y -= lineHeight * 0.5
+        continue
+      }
+
+      if (y - lineHeight < minY) {
+        page = pdfDoc.addPage([pageWidth, pageHeight])
+        y = maxY
+      }
+
+      page.drawText(line, {
+        x: marginLeft,
+        y,
+        size: fontSize,
+        font,
+        color: rgb(0, 0, 0),
+      })
+      y -= lineHeight
+    }
+
+    const pdfBytes = await pdfDoc.save()
+    const pdfBuffer = Buffer.from(pdfBytes.buffer, pdfBytes.byteOffset, pdfBytes.byteLength)
 
     return new NextResponse(pdfBuffer as any, {
       headers: {
