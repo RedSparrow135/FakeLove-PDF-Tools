@@ -4,18 +4,8 @@ import PDFDocument from 'pdfkit'
 
 const MAX_SIZE = 4.5 * 1024 * 1024
 
-interface Style {
-  bold: boolean
-  italic: boolean
-  underline: boolean
-  fontSize: number
-  color: string
-}
-
-function cleanHtmlText(html: string): Array<{ text: string; style: Style }> {
-  const fontSize = 11
-  const segments: Array<{ text: string; style: Style }> = []
-  const currentStyle: Style = { bold: false, italic: false, underline: false, fontSize, color: '#000000' }
+function cleanHtmlText(html: string): Array<{ text: string }> {
+  const segments: Array<{ text: string }> = []
 
   const cleanHtml = html
     .replace(/<br\s*\/?>/gi, '\n')
@@ -49,82 +39,83 @@ function cleanHtmlText(html: string): Array<{ text: string; style: Style }> {
   for (const line of lines) {
     const trimmed = line.trim()
     if (trimmed) {
-      segments.push({ text: trimmed, style: { ...currentStyle } })
+      segments.push({ text: trimmed })
     } else {
-      segments.push({ text: '\n', style: { ...currentStyle } })
+      segments.push({ text: '\n' })
     }
   }
   return segments
 }
 
 async function generatePdfFromHtml(html: string): Promise<Buffer> {
-  const doc = new PDFDocument({
-    size: 'A4',
-    margins: { top: 72, bottom: 72, left: 72, right: 72 },
-    bufferPages: true,
-  })
+  return new Promise((resolve, reject) => {
+    try {
+      const doc = new PDFDocument({
+        size: 'A4',
+        margins: { top: 72, bottom: 72, left: 72, right: 72 },
+        info: { Title: 'Converted Document' },
+      })
 
-  const chunks: Buffer[] = []
-  doc.on('data', (chunk: Buffer) => chunks.push(chunk))
+      const chunks: Buffer[] = []
+      doc.on('data', (chunk: Buffer) => chunks.push(chunk))
+      doc.on('end', () => resolve(Buffer.concat(chunks)))
+      doc.on('error', reject)
 
-  const fontSize = 11
-  const lineHeight = 16
-  const pageHeight = doc.page.height
-  const marginLeft = 72
-  const marginRight = 72
-  const maxWidth = doc.page.width - marginLeft - marginRight
-  let y = pageHeight - 100
+      const lineHeight = 16
+      const pageHeight = doc.page.height
+      const marginLeft = 72
+      const maxWidth = doc.page.width - marginLeft - 72
+      let y = pageHeight - 100
 
-  doc.font('Helvetica').fontSize(fontSize)
+      doc.fontSize(11)
 
-  const segments = cleanHtmlText(html)
-  let page = doc as any
+      const segments = cleanHtmlText(html)
 
-  for (const seg of segments) {
-    if (seg.text === '\n') {
-      y -= lineHeight * 0.8
-      if (y < 100) {
-        doc.addPage()
-        y = pageHeight - 100
-      }
-      continue
-    }
-
-    const text = seg.text
-    const words = text.split(' ')
-    let line = ''
-
-    for (const word of words) {
-      const testLine = line ? `${line} ${word}` : word
-      const testWidth = doc.widthOfString(testLine)
-
-      if (testWidth > maxWidth && line) {
-        if (y < 100) {
-          doc.addPage()
-          y = pageHeight - 100
+      for (const seg of segments) {
+        if (seg.text === '\n') {
+          y -= lineHeight * 0.8
+          if (y < 100) {
+            doc.addPage()
+            y = pageHeight - 100
+          }
+          continue
         }
-        page.drawText(line, { x: marginLeft, y, width: maxWidth })
-        y -= lineHeight
-        line = word
-      } else {
-        line = testLine
+
+        const text = seg.text
+        const words = text.split(' ')
+        let line = ''
+
+        for (const word of words) {
+          const testLine = line ? `${line} ${word}` : word
+          const testWidth = doc.widthOfString(testLine)
+
+          if (testWidth > maxWidth && line) {
+            if (y < 100) {
+              doc.addPage()
+              y = pageHeight - 100
+            }
+            doc.text(line, marginLeft, y, { width: maxWidth, lineBreak: false })
+            y -= lineHeight
+            line = word
+          } else {
+            line = testLine
+          }
+        }
+
+        if (line) {
+          if (y < 100) {
+            doc.addPage()
+            y = pageHeight - 100
+          }
+          doc.text(line, marginLeft, y, { width: maxWidth, lineBreak: false })
+          y -= lineHeight
+        }
       }
+
+      doc.end()
+    } catch (err) {
+      reject(err)
     }
-
-    if (line) {
-      if (y < 100) {
-        doc.addPage()
-        y = pageHeight - 100
-      }
-      page.drawText(line, { x: marginLeft, y, width: maxWidth })
-      y -= lineHeight
-    }
-  }
-
-  doc.end()
-
-  return new Promise((resolve) => {
-    doc.on('end', () => resolve(Buffer.concat(chunks)))
   })
 }
 
