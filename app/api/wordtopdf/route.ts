@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import mammoth from 'mammoth'
-import { PDFDocument, StandardFonts } from 'pdf-lib'
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 
 const MAX_SIZE = 4.5 * 1024 * 1024
 
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
         page = pdfDoc.addPage([pageWidth, pageHeight])
         y = pageHeight - margin
       }
-      page.drawText(line, { x: margin, y, size: fontSize, font, color: { r: 0, g: 0, b: 0 } as any })
+      page.drawText(line, { x: margin, y, size: fontSize, font, color: rgb(0, 0, 0) })
       y -= lineHeight
     }
 
