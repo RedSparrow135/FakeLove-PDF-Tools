@@ -2,6 +2,8 @@
 
 Complete guide to all features in FakeLove PDF Tools.
 
+**Note:** This document reflects the **Vercel-limited** version. For the full version with unlimited features, see the `main` branch or deploy on your own server.
+
 ---
 
 ## Core PDF Tools
@@ -17,6 +19,8 @@ Complete guide to all features in FakeLove PDF Tools.
 4. Click "Merge Now"
 5. Download the combined PDF
 
+**⚠️ Vercel Limit:** 4.5MB per file total
+
 **Options:**
 - Drag to reorder files
 - Select specific pages from each file
@@ -27,25 +31,6 @@ Complete guide to all features in FakeLove PDF Tools.
 | **pdf-lib** | Core PDF manipulation |
 | **Next.js API Routes** | Server-side processing |
 | **@dnd-kit** | Drag-and-drop reordering |
-
-**How it works:**
-1. Client sends files to `/api/merge`
-2. Server uses `pdf-lib` to load each PDF
-3. Pages are copied to a new PDF document
-4. User-selected pages are included based on selection
-5. Merged PDF is returned as a blob
-
-**Code example (api/merge/route.ts):**
-```typescript
-const mergedPdf = await PDFDocument.create()
-for (const file of files) {
-  const arrayBuffer = await file.arrayBuffer()
-  const pdf = await PDFDocument.load(arrayBuffer)
-  const copiedPages = await mergedPdf.copyPages(pdf, pageIndices)
-  copiedPages.forEach((page) => mergedPdf.addPage(page))
-}
-const pdfBytes = await mergedPdf.save()
-```
 
 ---
 
@@ -63,10 +48,7 @@ const pdfBytes = await mergedPdf.save()
 4. Click "Extract"
 5. Download the extracted pages
 
-**Options:**
-- Select all pages
-- Deselect all
-- Custom page ranges
+**⚠️ Vercel Limit:** 4.5MB per file
 
 **Page Selection Syntax:**
 - `1-3` — Pages 1 through 3
@@ -79,9 +61,11 @@ const pdfBytes = await mergedPdf.save()
 
 **Purpose:** Reduce the file size of a PDF document.
 
-**⚠️ Note:** Requires a self-hosted server (not Vercel). Uses Ghostscript for compression.
+**⚠️ Status:** **Coming Soon** on Vercel
 
-**How to use:**
+**Reason:** Requires Ghostscript installation on server.
+
+**How to use on Self-Hosted:**
 1. Upload a PDF file
 2. Select compression level
 3. Click "Compress Now"
@@ -100,29 +84,7 @@ const pdfBytes = await mergedPdf.save()
 | Technology | Purpose |
 |------------|---------|
 | **Ghostscript** | PDF rendering and recompression |
-| **Python** | Script automation (optional) |
 | **pdf-lib** | Client-side preview |
-
-**How it works (Ghostscript):**
-1. Client uploads PDF to `/api/compress`
-2. Server runs Ghostscript command:
-   ```bash
-   gs -sDEVICE=pdfwrite -dNOPAUSE -dQUIET -dBATCH \
-     -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook \
-     -sOutputFile=output.pdf input.pdf
-   ```
-3. Ghostscript renders PDF at lower resolution
-4. Compressed PDF is returned to client
-
-**Why not pdf-lib?**
-- pdf-lib cannot recompress images within PDFs
-- It can only manipulate existing PDF structure
-- Ghostscript provides true lossy compression
-
-**Why not in Vercel?**
-- Vercel doesn't allow installing system software
-- Ghostscript needs to be installed on the server
-- Requires self-hosted deployment
 
 ---
 
@@ -138,13 +100,14 @@ const pdfBytes = await mergedPdf.save()
 3. Click "Convert Now"
 4. Download the PDF
 
+**⚠️ Vercel Limit:** 4.5MB per image
+
 **Supported Formats:**
 - PNG
 - JPG/JPEG
 - GIF
 - WEBP
 - BMP
-- TIFF
 
 **Technical Implementation:**
 | Technology | Purpose |
@@ -152,95 +115,58 @@ const pdfBytes = await mergedPdf.save()
 | **pdf-lib** | Create PDF and embed images |
 | **Canvas API** | Client-side image preview |
 
-**How it works:**
-1. Client reads image files
-2. Images are converted to base64
-3. Sent to `/api/imagetopdf`
-4. Server uses pdf-lib to:
-   - Create new PDF document
-   - Embed each image on a page
-   - Scale to fit page dimensions
-5. PDF is returned as blob
-
 ---
 
 ## Conversion Features
 
-### 5. PDF to Word (DOCX)
+### 5. Word/DOCX to PDF
 
-**Purpose:** Convert PDF documents to Microsoft Word format.
-
-**⚠️ Note:** This feature is being improved to not require LibreOffice.
+**Purpose:** Convert Word documents to PDF.
 
 **How to use:**
-1. Navigate to PDF → Word
-2. Upload a PDF file
-3. Click "Convert to DOCX"
-4. Download the DOCX file
+1. Navigate to Word → PDF
+2. Upload a DOCX file
+3. Click "Convert"
+4. Download the PDF
 
-**Technical Implementation (Current):**
-| Technology | Purpose |
-|------------|---------|
-| **libreoffice-convert** | LibreOffice headless mode |
-| **LibreOffice** | Requires installation |
-
-**Limitation:** LibreOffice has limitations:
-- Requires installation on server
-- Large file conversion is slow
-- Formatting may not be 100% accurate
-
-**Future Implementation (No LibreOffice):**
-| Technology | Purpose |
-|------------|---------|
-| **pdf-lib** | Read PDF content |
-| **docx** | Generate DOCX structure |
-| **mammoth** | Extract text and formatting |
-
-**How it will work:**
-1. Parse PDF with pdf-lib
-2. Extract text blocks and positions
-3. Generate DOCX using `docx` library
-4. Preserve basic formatting (bold, italic, paragraphs)
-
----
-
-### 6. PDF to Excel (XLSX)
-
-**Purpose:** Convert PDF documents to Microsoft Excel format.
-
-**How to use:**
-1. Navigate to PDF → Excel
-2. Upload a PDF file
-3. Click "Convert to XLSX"
-4. Download the XLSX file
-
-**Note:** Works best with tabular data in the PDF.
+**⚠️ Vercel Limit:** 4.5MB file size
+**⚠️ Note:** Text-only conversion (no formatting)
 
 **Technical Implementation:**
 | Technology | Purpose |
 |------------|---------|
-| **xlsx** | Generate Excel files |
-| **pdf-lib** | Extract table data |
+| **mammoth** | Extract text from DOCX |
+| **pdf-lib** | Create PDF with extracted text |
 
 ---
 
-### 7. PDF to PowerPoint (PPTX)
+### 6. Excel/XLSX to PDF
 
-**Purpose:** Convert PDF documents to Microsoft PowerPoint format.
+**Purpose:** Convert Excel spreadsheets to PDF.
 
-**How to use:**
-1. Navigate to PDF → PowerPoint
-2. Upload a PDF file
-3. Click "Convert to PPTX"
-4. Download the PPTX file
+**⚠️ Status:** **Coming Soon** on Vercel
 
-**Note:** Each PDF page becomes a slide.
+---
+
+### 7. PowerPoint/PPTX to PDF
+
+**Purpose:** Convert PowerPoint presentations to PDF.
+
+**⚠️ Status:** **Coming Soon** on Vercel
+
+---
+
+### 8. JPG/Image to PDF
+
+**Purpose:** Convert images directly to PDF.
+
+**⚠️ Status:** **Coming Soon** on Vercel
 
 ---
 
 ## Special Features
 
-### 8. Bilingual Interface
+### 9. Bilingual Interface
 
 **Purpose:** Support for Spanish and English languages.
 
@@ -252,45 +178,27 @@ const pdfBytes = await mergedPdf.save()
 
 **Persistence:** Language choice is saved in localStorage.
 
-**Coverage:** All UI text, buttons, and messages are translated.
-
 ---
 
-### 9. Binary Easter Egg
-
-**Purpose:** Celebratory animation when completing tasks.
-
-**Trigger:** Automatically activates after successful processing.
-
-**Animation Phases:**
-1. **Typing** — Binary characters appear one by one
-2. **Coding** — Random glitch effect
-3. **Disintegrate** — Particles scatter and fade
-
-**Messages:** Rotates through binary-encoded phrases:
-- FAKE LOVE
-- PDF MASTER
-- NICE WORK
-- BINARY LOVE
-- LOL PDF
-
----
-
-### 10. Developer Signature
-
-**Purpose:** Display "Charle-X" branding.
-
-**Location:** Footer with heart animation.
-
----
-
-### 11. Process History
+### 10. Process History
 
 **Purpose:** Track all file processing operations.
 
-**Location:** Sidebar or dedicated history section.
+**Location:** Sidebar → History
 
 **Persistence:** Saved in localStorage, survives refresh.
+
+---
+
+### 11. File Upload from Home
+
+**Purpose:** Quick file upload from the dashboard.
+
+**How to use:**
+1. Click the floating upload button (bottom-right)
+2. Select or drag a file
+3. Choose the tool to use
+4. File transfers automatically to the tool
 
 ---
 
@@ -299,8 +207,9 @@ const pdfBytes = await mergedPdf.save()
 ### Navigation
 
 **Sidebar:** Contains all tool categories
-- PDF Tools (icons)
-- Convert (icons)
+- Dashboard
+- PDF Tools
+- Convert
 - History
 - Settings
 
@@ -328,13 +237,12 @@ const pdfBytes = await mergedPdf.save()
 All operations run in the background without blocking the UI.
 
 ### File Size Limits
-- Vercel version: 4.5MB per file (Vercel function limit)
-- Self-hosted: No limit
+- **Vercel version:** 4.5MB per file (Vercel function limit)
+- **Self-hosted:** No limit
 
 ### Processing Time
 - Merge: ~2-5 seconds
 - Split: ~1-3 seconds
-- Compress: ~5-30 seconds (depends on compression level)
 - Image to PDF: ~3-10 seconds
 
 ---
@@ -347,18 +255,14 @@ All operations run in the background without blocking the UI.
 - Try clicking instead of dragging
 
 ### Conversion failed?
-- Ensure Ghostscript is installed (for compression)
 - Try with a smaller file
 - Use self-hosted version for unlimited file sizes
-
-### Animation not showing?
-- Enable JavaScript in browser
-- Check browser console for errors
 
 ---
 
 ## Next Steps
 
-- See [Architecture](../ARCHITECTURE.md) for technical details
-- Review [API Reference](../API.md) for developers
-- Check [Deployment](../DEPLOYMENT.md) for production setup
+- See [VERCEL.md](./VERCEL.md) for Vercel-specific limitations
+- See [Architecture](./ARCHITECTURE.md) for technical details
+- Review [API Reference](./API.md) for developers
+- Check [Deployment](./DEPLOYMENT.md) for production setup
