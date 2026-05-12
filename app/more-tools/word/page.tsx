@@ -164,7 +164,7 @@ export default function WordPage() {
       <div className={styles.content}>
         <Link href="/" className={styles.backLink}>{t('common.back')}</Link>
         <h1 className={styles.title}>{config.title}</h1>
-        <p className={styles.humor}>Convert Word documents to PDF — No LibreOffice needed!</p>
+        <p className={styles.humor}>Convert Word documents to PDF</p>
 
         <div className={styles.container}>
           {file ? (
