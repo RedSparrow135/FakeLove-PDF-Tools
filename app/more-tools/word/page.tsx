@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 import ResultCard from '@/components/ResultCard'
@@ -15,16 +15,8 @@ export default function WordPage() {
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<{ url: string; name: string } | null>(null)
-  const [isDragOver, setIsDragOver] = useState(false)
-  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const config = { color: '#3b82f6', icon: 'DOCX', title: 'WORD → PDF', accept: '.docx,.doc' }
-
-  useEffect(() => {
-    return () => {
-      if (progressRef.current) clearInterval(progressRef.current)
-    }
-  }, [])
 
   const formatSize = (bytes: number): string => {
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
@@ -62,20 +54,14 @@ export default function WordPage() {
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
-    e.stopPropagation()
-    setIsDragOver(true)
   }
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault()
-    e.stopPropagation()
-    setIsDragOver(false)
   }
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
-    e.stopPropagation()
-    setIsDragOver(false)
     const f = e.dataTransfer.files
     if (f && f.length > 0) handleFiles(f)
   }
@@ -86,7 +72,7 @@ export default function WordPage() {
     setIsProcessing(true)
     setProgress(0)
 
-    progressRef.current = setInterval(() => {
+    const interval = setInterval(() => {
       setProgress(p => Math.min(p + Math.random() * 15, 90))
     }, 300)
 
@@ -110,7 +96,7 @@ export default function WordPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : t('common.error'))
     } finally {
-      if (progressRef.current) clearInterval(progressRef.current)
+      clearInterval(interval)
       setIsProcessing(false)
     }
   }
@@ -166,6 +152,29 @@ export default function WordPage() {
         <h1 className={styles.title}>{config.title}</h1>
         <p className={styles.humor}>Convert Word documents to PDF</p>
 
+        <div className={styles.trialBanner}>
+          <div className={styles.trialBadge}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            TRIAL VERSION
+          </div>
+          <p>This is a simplified version for Vercel. For full formatting and no limits, get the complete version:</p>
+          <a 
+            href="https://github.com/RedSparrow135/FakeLove-PDF-Tools" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className={styles.repoButton}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            Get Full Version on GitHub
+          </a>
+        </div>
+
         <div className={styles.container}>
           {file ? (
             <div className={styles.fileCard}>
@@ -180,7 +189,7 @@ export default function WordPage() {
             </div>
           ) : (
             <div 
-              className={`${styles.dropZone} ${isDragOver ? styles.dragOver : ''}`} 
+              className={styles.dropZone} 
               onClick={handleAddFile}
             >
               <div className={styles.dropIcon}>
@@ -193,7 +202,6 @@ export default function WordPage() {
               </div>
               <p>Drop your Word document here</p>
               <p style={{ fontSize: '0.85rem', color: '#6b7280', marginTop: '8px' }}>or click to browse</p>
-              <p style={{ fontSize: '0.75rem', color: '#3b82f6', marginTop: '16px' }}>.docx files supported</p>
             </div>
           )}
 
@@ -201,24 +209,24 @@ export default function WordPage() {
 
           {file && (
             <button className={styles.downloadBtn} onClick={handleConvert} disabled={isProcessing}>
-              {isProcessing ? `${t('common.processing')} ${Math.round(progress)}%` : 'Convert to PDF'}
+              {isProcessing ? `Converting... ${Math.round(progress)}%` : 'Convert to PDF'}
             </button>
           )}
         </div>
-      </div>
 
-      {isProcessing && (
-        <div className={styles.loadingOverlay}>
-          <div className={styles.loadingCard}>
-            <div className={styles.loadingIcon}>{config.icon}</div>
-            <div className={styles.loadingText}>{t('loader.processing')}</div>
-            <div className={styles.progressBar}>
-              <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+        {isProcessing && (
+          <div className={styles.loadingOverlay}>
+            <div className={styles.loadingCard}>
+              <div className={styles.loadingIcon}>{config.icon}</div>
+              <div className={styles.loadingText}>Converting...</div>
+              <div className={styles.progressBar}>
+                <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+              </div>
+              <div className={styles.loadingHint}>{Math.round(progress)}% complete</div>
             </div>
-            <div className={styles.loadingHint}>{Math.round(progress)}% complete</div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </main>
   )
 }
