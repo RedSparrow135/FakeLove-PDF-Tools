@@ -46,6 +46,29 @@ export async function POST(request: NextRequest) {
       text = '(Empty document)'
     }
 
+    text = text
+      .replace(/\u0130/g, 'I')
+      .replace(/\u0131/g, 'i')
+      .replace(/\u011e/g, 'G')
+      .replace(/\u011f/g, 'g')
+      .replace(/\u00DC/g, 'U')
+      .replace(/\u00FC/g, 'u')
+      .replace(/\u015E/g, 'S')
+      .replace(/\u015F/g, 's')
+      .replace(/\u00D6/g, 'O')
+      .replace(/\u00F6/g, 'o')
+      .replace(/\u00C7/g, 'C')
+      .replace(/\u00E7/g, 'c')
+      .replace(/\u00DF/g, 'ss')
+      .replace(/[^\x00-\x7F]/g, (char: string) => {
+        const replacements: Record<string, string> = {
+          '\u20AC': 'EUR', '\u00A3': 'GBP', '\u00A5': 'JPY',
+          '\u2026': '...', '\u2013': '-', '\u2014': '-',
+          '\u2022': '-', '\u00B0': 'deg', '\u00B1': '+/-',
+        }
+        return replacements[char] || '?'
+      })
+
     const pdfDoc = await PDFDocument.create()
     const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman)
 
