@@ -144,8 +144,9 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     console.error('Word to PDF error:', error)
+    const message = error?.message || error?.toString() || 'Unknown error'
     return NextResponse.json(
-      { error: `Conversion failed: ${error?.message?.slice(0, 100) || 'Unknown error'}` },
+      { error: `Conversion failed: ${message.slice(0, 200)}` },
       { status: 500 }
     )
   }
