@@ -34,8 +34,6 @@ const emotionalMessages = [
   "Your files look lonely... let's unite them",
 ]
 
-const MAX_SIZE = 4.5 * 1024 * 1024 // 4.5MB - Límite Vercel
-
 export default function MergePage() {
   const { t } = useLanguage()
   const { addProcess, updateProcess } = useProcesses()
@@ -44,7 +42,6 @@ export default function MergePage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [result, setResult] = useState<{ url: string; name: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [warning, setWarning] = useState<string | null>(null)
   const [messageIndex, setMessageIndex] = useState(0)
   const [activeId, setActiveId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -67,19 +64,8 @@ export default function MergePage() {
 
   const handleFilesSelected = useCallback(async (newFiles: File[]) => {
     setError(null)
-    setWarning(null)
-    
-    const sizeWarning = newFiles.some(f => f.size > MAX_SIZE)
-    if (sizeWarning) {
-      setWarning(`⚠️ Versión de prueba: Límite de 4.5MB por archivo en Vercel. Algunos archivos pueden fallar.`)
-    }
-    
     const pdfFiles: PDFFileData[] = []
     for (const file of newFiles) {
-      if (file.size > MAX_SIZE) {
-        setWarning(`⚠️ "${file.name}" supera el límite de 4.5MB`)
-        continue
-      }
       const pageCount = await getPageCount(file)
       const allPages = Array.from({ length: pageCount }, (_, i) => i + 1)
       pdfFiles.push({
@@ -377,9 +363,6 @@ export default function MergePage() {
                   <span className={styles.panelStatLabel}>{t('merge.selected')}</span>
                   <span className={styles.panelStatValue}>{totalPages}</span>
                 </div>
-                {warning && (
-                  <div className={styles.warning}>{warning}</div>
-                )}
               </div>
 
               <div className={styles.panelActions}>
