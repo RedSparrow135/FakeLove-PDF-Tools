@@ -6,17 +6,19 @@ import { useLanguage } from '@/lib/language'
 import ResultCard from '@/components/ResultCard'
 import styles from '../page.module.scss'
 
-const config = { color: '#3b82f6', icon: 'DOC', title: 'WORD → PDF', accept: '.doc,.docx,.odt,.rtf', endpoint: '/api/convert' }
+const MAX_SIZE = 4.5 * 1024 * 1024 // 4.5MB Vercel limit
 
 export default function WordPage() {
   const { t } = useLanguage()
-  const [files, setFiles] = useState<File[]>([])
+  const [file, setFile] = useState<File | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<{ url: string; name: string } | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const config = { color: '#3b82f6', icon: 'DOCX', title: 'WORD → PDF', accept: '.docx,.doc' }
 
   useEffect(() => {
     return () => {
@@ -30,17 +32,22 @@ export default function WordPage() {
   }
 
   const handleFiles = useCallback((fileList: FileList) => {
-    const validFiles = Array.from(fileList).filter(f => {
-      const ext = '.' + f.name.split('.').pop()?.toLowerCase()
-      return config.accept.split(',').some(accept => accept.trim() === ext || accept.trim() === f.type)
-    })
-    if (validFiles.length > 0) {
-      setFiles(validFiles)
-      setError(null)
-    } else {
-      setError('Invalid file type')
+    const selectedFile = fileList[0]
+    const ext = '.' + selectedFile.name.split('.').pop()?.toLowerCase()
+    
+    if (!['.docx', '.doc'].includes(ext)) {
+      setError('Invalid file type. Please use .docx or .doc')
+      return
     }
-  }, [config.accept])
+    
+    if (selectedFile.size > MAX_SIZE) {
+      setError(`File too large. Maximum size is 4.5MB. Your file is ${formatSize(selectedFile.size)}`)
+      return
+    }
+    
+    setFile(selectedFile)
+    setError(null)
+  }, [])
 
   const handleAddFile = () => {
     const input = document.createElement('input')
@@ -74,7 +81,7 @@ export default function WordPage() {
   }
 
   const handleConvert = async () => {
-    if (files.length === 0) return
+    if (!file) return
     setError(null)
     setIsProcessing(true)
     setProgress(0)
@@ -85,19 +92,23 @@ export default function WordPage() {
 
     try {
       const formData = new FormData()
-      formData.append('files', files[0])
+      formData.append('file', file)
 
-      const response = await fetch(config.endpoint, { method: 'POST', body: formData })
-      if (!response.ok) throw new Error('Conversion failed')
+      const response = await fetch('/api/wordtopdf', { method: 'POST', body: formData })
+      
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({ error: 'Conversion failed' }))
+        throw new Error(data.error)
+      }
       
       const blob = await response.blob()
       setProgress(100)
       
       setTimeout(() => {
-        setResult({ url: URL.createObjectURL(blob), name: files[0].name.replace(/\.[^.]+$/, '.pdf') })
+        setResult({ url: URL.createObjectURL(blob), name: file.name.replace(/\.[^.]+$/, '.pdf') })
       }, 500)
-    } catch {
-      setError(t('common.error'))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('common.error'))
     } finally {
       if (progressRef.current) clearInterval(progressRef.current)
       setIsProcessing(false)
@@ -105,7 +116,7 @@ export default function WordPage() {
   }
 
   const handleReset = () => {
-    setFiles([])
+    setFile(null)
     setResult(null)
     setError(null)
     setProgress(0)
@@ -121,12 +132,12 @@ export default function WordPage() {
         <div className={styles.content}>
           <Link href="/" className={styles.backLink}>{t('common.back')}</Link>
           <ResultCard
-            title={t('image.complete')}
-            description="Your Word doc is now a PDF!"
+            title="Conversion Complete!"
+            description="Your Word document is now a PDF!"
             downloadUrl={result.url}
             fileName={result.name}
             stats={[
-              { label: 'Format', value: 'DOC → PDF' },
+              { label: 'Format', value: 'DOCX → PDF' },
             ]}
           />
           <div className={styles.resultActions}>
@@ -153,12 +164,23 @@ export default function WordPage() {
       <div className={styles.content}>
         <Link href="/" className={styles.backLink}>{t('common.back')}</Link>
         <h1 className={styles.title}>{config.title}</h1>
-        <p className={styles.humor}>Convert Word documents to PDF</p>
+        <p className={styles.humor}>Convert Word documents to PDF — No LibreOffice needed!</p>
 
         <div className={styles.container}>
-          {files.length === 0 ? (
+          {file ? (
+            <div className={styles.fileCard}>
+              <div className={styles.fileInfo}>
+                <span className={styles.fileIcon}>{config.icon}</span>
+                <div className={styles.fileDetails}>
+                  <span className={styles.fileName}>{file.name}</span>
+                  <span className={styles.fileSize}>{formatSize(file.size)}</span>
+                </div>
+              </div>
+              <button className={styles.removeBtn} onClick={handleReset}>Remove</button>
+            </div>
+          ) : (
             <div 
-              className={styles.dropZone} 
+              className={`${styles.dropZone} ${isDragOver ? styles.dragOver : ''}`} 
               onClick={handleAddFile}
             >
               <div className={styles.dropIcon}>
@@ -171,23 +193,13 @@ export default function WordPage() {
               </div>
               <p>Drop your Word document here</p>
               <p style={{ fontSize: '0.85rem', color: '#6b7280', marginTop: '8px' }}>or click to browse</p>
-            </div>
-          ) : (
-            <div className={styles.fileCard}>
-              <div className={styles.fileInfo}>
-                <span className={styles.fileIcon}>{config.icon}</span>
-                <div className={styles.fileDetails}>
-                  <span className={styles.fileName}>{files[0].name}</span>
-                  <span className={styles.fileSize}>{formatSize(files[0].size)}</span>
-                </div>
-              </div>
-              <button className={styles.removeBtn} onClick={() => setFiles([])}>Remove</button>
+              <p style={{ fontSize: '0.75rem', color: '#3b82f6', marginTop: '16px' }}>.docx files supported</p>
             </div>
           )}
 
           {error && <div className={styles.error}>{error}</div>}
 
-          {files.length > 0 && (
+          {file && (
             <button className={styles.downloadBtn} onClick={handleConvert} disabled={isProcessing}>
               {isProcessing ? `${t('common.processing')} ${Math.round(progress)}%` : 'Convert to PDF'}
             </button>

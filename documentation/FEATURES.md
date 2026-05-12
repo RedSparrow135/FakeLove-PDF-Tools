@@ -21,7 +21,31 @@ Complete guide to all features in FakeLove PDF Tools.
 - Drag to reorder files
 - Select specific pages from each file
 
-**Technical:** Uses `pdf-lib` for merging on the server.
+**Technical Implementation:**
+| Technology | Purpose |
+|------------|---------|
+| **pdf-lib** | Core PDF manipulation |
+| **Next.js API Routes** | Server-side processing |
+| **@dnd-kit** | Drag-and-drop reordering |
+
+**How it works:**
+1. Client sends files to `/api/merge`
+2. Server uses `pdf-lib` to load each PDF
+3. Pages are copied to a new PDF document
+4. User-selected pages are included based on selection
+5. Merged PDF is returned as a blob
+
+**Code example (api/merge/route.ts):**
+```typescript
+const mergedPdf = await PDFDocument.create()
+for (const file of files) {
+  const arrayBuffer = await file.arrayBuffer()
+  const pdf = await PDFDocument.load(arrayBuffer)
+  const copiedPages = await mergedPdf.copyPages(pdf, pageIndices)
+  copiedPages.forEach((page) => mergedPdf.addPage(page))
+}
+const pdfBytes = await mergedPdf.save()
+```
 
 ---
 
@@ -55,6 +79,8 @@ Complete guide to all features in FakeLove PDF Tools.
 
 **Purpose:** Reduce the file size of a PDF document.
 
+**⚠️ Note:** Requires a self-hosted server (not Vercel). Uses Ghostscript for compression.
+
 **How to use:**
 1. Upload a PDF file
 2. Select compression level
@@ -63,14 +89,40 @@ Complete guide to all features in FakeLove PDF Tools.
 
 **Compression Levels:**
 
-| Level | Quality | Use Case |
-|-------|---------|----------|
-| Low | Maximum | When quality is critical |
-| Medium | Good | Balanced (recommended) |
-| High | Low | Maximum compression |
-| Extreme | Minimal | Minimum size needed |
+| Level | Quality | Use Case | Size Reduction |
+|-------|---------|----------|----------------|
+| Low | Maximum | When quality is critical | ~20-30% |
+| Medium | Good | Balanced (recommended) | ~50-60% |
+| High | Low | Maximum compression | ~60-70% |
+| Extreme | Minimal | Minimum size needed | ~70-85% |
 
-**Technical:** Uses Ghostscript with Python for compression.
+**Technical Implementation:**
+| Technology | Purpose |
+|------------|---------|
+| **Ghostscript** | PDF rendering and recompression |
+| **Python** | Script automation (optional) |
+| **pdf-lib** | Client-side preview |
+
+**How it works (Ghostscript):**
+1. Client uploads PDF to `/api/compress`
+2. Server runs Ghostscript command:
+   ```bash
+   gs -sDEVICE=pdfwrite -dNOPAUSE -dQUIET -dBATCH \
+     -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook \
+     -sOutputFile=output.pdf input.pdf
+   ```
+3. Ghostscript renders PDF at lower resolution
+4. Compressed PDF is returned to client
+
+**Why not pdf-lib?**
+- pdf-lib cannot recompress images within PDFs
+- It can only manipulate existing PDF structure
+- Ghostscript provides true lossy compression
+
+**Why not in Vercel?**
+- Vercel doesn't allow installing system software
+- Ghostscript needs to be installed on the server
+- Requires self-hosted deployment
 
 ---
 
@@ -94,7 +146,21 @@ Complete guide to all features in FakeLove PDF Tools.
 - BMP
 - TIFF
 
-**Technical:** Uses `pdf-lib` for image embedding.
+**Technical Implementation:**
+| Technology | Purpose |
+|------------|---------|
+| **pdf-lib** | Create PDF and embed images |
+| **Canvas API** | Client-side image preview |
+
+**How it works:**
+1. Client reads image files
+2. Images are converted to base64
+3. Sent to `/api/imagetopdf`
+4. Server uses pdf-lib to:
+   - Create new PDF document
+   - Embed each image on a page
+   - Scale to fit page dimensions
+5. PDF is returned as blob
 
 ---
 
@@ -104,13 +170,37 @@ Complete guide to all features in FakeLove PDF Tools.
 
 **Purpose:** Convert PDF documents to Microsoft Word format.
 
+**⚠️ Note:** This feature is being improved to not require LibreOffice.
+
 **How to use:**
 1. Navigate to PDF → Word
 2. Upload a PDF file
 3. Click "Convert to DOCX"
 4. Download the DOCX file
 
-**Note:** Requires LibreOffice installed on the server.
+**Technical Implementation (Current):**
+| Technology | Purpose |
+|------------|---------|
+| **libreoffice-convert** | LibreOffice headless mode |
+| **LibreOffice** | Requires installation |
+
+**Limitation:** LibreOffice has limitations:
+- Requires installation on server
+- Large file conversion is slow
+- Formatting may not be 100% accurate
+
+**Future Implementation (No LibreOffice):**
+| Technology | Purpose |
+|------------|---------|
+| **pdf-lib** | Read PDF content |
+| **docx** | Generate DOCX structure |
+| **mammoth** | Extract text and formatting |
+
+**How it will work:**
+1. Parse PDF with pdf-lib
+2. Extract text blocks and positions
+3. Generate DOCX using `docx` library
+4. Preserve basic formatting (bold, italic, paragraphs)
 
 ---
 
@@ -125,6 +215,12 @@ Complete guide to all features in FakeLove PDF Tools.
 4. Download the XLSX file
 
 **Note:** Works best with tabular data in the PDF.
+
+**Technical Implementation:**
+| Technology | Purpose |
+|------------|---------|
+| **xlsx** | Generate Excel files |
+| **pdf-lib** | Extract table data |
 
 ---
 
@@ -184,13 +280,7 @@ Complete guide to all features in FakeLove PDF Tools.
 
 **Purpose:** Display "Charle-X" branding.
 
-**Location:** Bottom-right corner, floating above footer.
-
-**Features:**
-- Pixel heart animation
-- Binary message display
-- Opacity transition on load
-- Appears after 1 second delay
+**Location:** Footer with heart animation.
 
 ---
 
@@ -201,11 +291,6 @@ Complete guide to all features in FakeLove PDF Tools.
 **Location:** Sidebar or dedicated history section.
 
 **Persistence:** Saved in localStorage, survives refresh.
-
-**Features:**
-- View recent operations
-- Clear completed items
-- See operation status
 
 ---
 
@@ -225,7 +310,7 @@ Complete guide to all features in FakeLove PDF Tools.
 - Visual feedback on drag
 - Click to browse option
 - File type validation
-- Size limit indicator (50MB)
+- Size limit indicator (4.5MB on Vercel)
 
 ### Result Display
 
@@ -237,51 +322,20 @@ Complete guide to all features in FakeLove PDF Tools.
 
 ---
 
-## Humor System
-
-FakeLove includes sarcastic messages throughout:
-
-**Loading:**
-- "Uploading your emotional baggage..."
-- "Processing… unlike your ex"
-- "Converting pixels into PDF love"
-
-**Success:**
-- "Done. That was suspiciously easy."
-- "Your PDF is ready. Unlike your plans for tonight."
-
-**Error:**
-- "Something broke. Probably your fault."
-- "We tried. Emotionally, not technically."
-
----
-
-## Keyboard Shortcuts
-
-| Action | Shortcut |
-|--------|----------|
-| Upload file | Ctrl/Cmd + O |
-| Download result | Ctrl/Cmd + S |
-| Clear selection | Escape |
-| Switch language | Ctrl/Cmd + L |
-
----
-
 ## Performance
 
 ### Background Processing
 All operations run in the background without blocking the UI.
 
 ### File Size Limits
-- Maximum upload: 50MB per file
-- Maximum files: Varies by tool
+- Vercel version: 4.5MB per file (Vercel function limit)
+- Self-hosted: No limit
 
 ### Processing Time
 - Merge: ~2-5 seconds
 - Split: ~1-3 seconds
 - Compress: ~5-30 seconds (depends on compression level)
 - Image to PDF: ~3-10 seconds
-- PDF to Office: ~10-60 seconds (requires LibreOffice)
 
 ---
 
@@ -289,13 +343,13 @@ All operations run in the background without blocking the UI.
 
 ### Upload not working?
 - Check file format (must be PDF for most tools)
-- Check file size (max 50MB)
+- Check file size (max 4.5MB on Vercel)
 - Try clicking instead of dragging
 
 ### Conversion failed?
-- Ensure LibreOffice is installed (for PDF to Office)
+- Ensure Ghostscript is installed (for compression)
 - Try with a smaller file
-- Check Ghostscript installation (for compression)
+- Use self-hosted version for unlimited file sizes
 
 ### Animation not showing?
 - Enable JavaScript in browser
