@@ -39,7 +39,13 @@ export default function FileUploader({ onFileSelected }: FileUploaderProps) {
     setIsDragging(false)
   }, [])
 
-  const processFile = useCallback((file: File): Promise<FileWithPreview> => {
+  const MAX_FILE_SIZE = 4 * 1024 * 1024
+
+const processFile = useCallback((file: File): Promise<FileWithPreview> => {
+    if (file.size > MAX_FILE_SIZE) {
+      alert('El archivo es demasiado grande. Máximo 4MB para Vercel.')
+      return Promise.reject(new Error('File too large'))
+    }
     return new Promise((resolve) => {
       const isImage = SUPPORTED_IMAGE_TYPES.includes(file.type)
       if (isImage) {
