@@ -154,7 +154,7 @@ export default function WordPage() {
 
         <div className={styles.trialBanner}>
           <span className={styles.trialBadge}>TRIAL</span>
-          <p>Versión de prueba. <strong>Formato limitado.</strong> Versión completa: <a href="https://github.com/RedSparrow135/FakeLove-PDF-Tools" target="_blank" rel="noopener noreferrer" className={styles.repoButton}>GitHub</a></p>
+          <p>Versión básica. <strong>Formato completo</strong> disponible en: <a href="https://github.com/RedSparrow135/FakeLove-PDF-Tools" target="_blank" rel="noopener noreferrer" className={styles.repoButton}>GitHub</a></p>
         </div>
 
         <div className={styles.container}>

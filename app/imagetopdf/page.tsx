@@ -172,7 +172,7 @@ export default function ImageToPdfPage() {
 
         <div className={styles.trialBanner}>
           <span className={styles.trialBadge}>TRIAL</span>
-          <p>Límite de 4.5MB en Vercel. <strong>Sin límites</strong> en servidor propio: <a href="https://github.com/RedSparrow135/FakeLove-PDF-Tools" target="_blank" rel="noopener noreferrer" className={styles.repoButton}>GitHub</a></p>
+          <p>Límite de 4.5MB. <strong>Archivos ilimitados</strong> en servidor propio: <a href="https://github.com/RedSparrow135/FakeLove-PDF-Tools" target="_blank" rel="noopener noreferrer" className={styles.repoButton}>GitHub</a></p>
         </div>
 
         <div className={styles.container}>
