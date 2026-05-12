@@ -18,7 +18,7 @@ export default function CompressPage() {
           <div className={styles.badge}>PRÓXIMAMENTE</div>
           <h1 className={styles.title}>Compress PDF</h1>
           <p className={styles.subtitle}>Reduce file size without losing quality</p>
-          
+
           <div className={styles.placeholder}>
             <div className={styles.placeholderIcon}>
               <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">

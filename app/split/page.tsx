@@ -14,6 +14,8 @@ interface PageThumb {
 
 type SplitMode = 'selection' | 'every' | 'single'
 
+const MAX_SIZE = 4.5 * 1024 * 1024
+
 export default function SplitPage() {
   const { t } = useLanguage()
   const { addProcess, updateProcess } = useProcesses()
@@ -207,7 +209,12 @@ export default function SplitPage() {
 
   const handleFileSelected = (files: File[]) => {
     if (files.length > 0) {
-      setFile(files[0])
+      const selectedFile = files[0]
+      if (selectedFile.size > MAX_SIZE) {
+        setError(`File too large. Maximum: 4.5MB`)
+        return
+      }
+      setFile(selectedFile)
     }
   }
 

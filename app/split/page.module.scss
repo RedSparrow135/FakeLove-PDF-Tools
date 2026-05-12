@@ -775,28 +775,34 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 14px;
-  background: rgba(0, 0, 0, 0.4);
+  padding: 10px 16px;
+  background: rgba(31, 41, 55, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  color: #f9fafb;
+  border-radius: 10px;
+  color: #f3f4f6;
   font-size: 0.85rem;
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
 
   svg {
     width: 22px;
     height: 22px;
-    fill: #f9fafb;
+    fill: #f3f4f6;
+    transition: all 0.3s ease;
   }
 
   &:hover {
     background: #24292e;
-    border-color: #f9fafb;
+    border-color: #f3f4f6;
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+
+    svg {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+    }
   }
 }
 
