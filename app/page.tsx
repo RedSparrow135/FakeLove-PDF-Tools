@@ -36,6 +36,7 @@ import { useProcesses, operationLabels } from '@/lib/processContext'
 import { useLanguage } from '@/lib/language'
 import { themes, getTheme, Theme } from '@/lib/themes'
 import FileUploader from '@/components/FileUploader'
+import SplashScreen from '@/components/SplashScreen'
 import styles from './page.module.scss'
 
 type Category = 'dashboard' | 'pdf-tools' | 'convert' | 'history' | 'settings'
@@ -56,6 +57,7 @@ const operations = {
 }
 
 export default function DashboardPage() {
+  const [showSplash, setShowSplash] = useState(true)
   const [activeCategory, setActiveCategory] = useState<Category>('dashboard')
   const [searchQuery, setSearchQuery] = useState('')
   const [showLangMenu, setShowLangMenu] = useState(false)
@@ -586,6 +588,9 @@ export default function DashboardPage() {
 
       {/* File Uploader FAB */}
       <FileUploader />
+
+      {/* Splash Screen */}
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} minDuration={3500} />}
     </div>
   )
 }
