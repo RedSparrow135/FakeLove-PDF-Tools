@@ -483,22 +483,29 @@
 .repoButton {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: rgba(31, 41, 55, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  color: #9ca3af;
-  font-size: 0.75rem;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #f9fafb;
+  font-size: 0.85rem;
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
   flex-shrink: 0;
 
+  svg {
+    width: 22px;
+    height: 22px;
+    fill: #f9fafb;
+  }
+
   &:hover {
-    background: rgba(55, 65, 81, 0.9);
-    border-color: rgba(236, 72, 153, 0.4);
-    color: #ec4899;
+    background: #24292e;
+    border-color: #f9fafb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   }
 }
 
