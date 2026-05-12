@@ -39,11 +39,21 @@ export default function FileUploader({ onFileSelected }: FileUploaderProps) {
     setIsDragging(false)
   }, [])
 
-  const MAX_FILE_SIZE = 4 * 1024 * 1024
+  const MAX_FILE_SIZE = 4.5 * 1024 * 1024 // 4.5MB - Límite oficial de Vercel
+
+const formatSize = (bytes: number): string => {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
+
+const formatSizeMB = (bytes: number): string => {
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
 
 const processFile = useCallback((file: File): Promise<FileWithPreview> => {
     if (file.size > MAX_FILE_SIZE) {
-      alert('El archivo es demasiado grande. Máximo 4MB para Vercel.')
+      alert(`El archivo es demasiado grande. Máximo ${formatSizeMB(MAX_FILE_SIZE)} para Vercel (versión de prueba).`)
       return Promise.reject(new Error('File too large'))
     }
     return new Promise((resolve) => {

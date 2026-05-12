@@ -198,6 +198,8 @@ export default function MergePage() {
   }
 
   const totalPages = files.reduce((acc, f) => acc + f.selectedPages.length, 0)
+  const totalSize = files.reduce((acc, f) => acc + f.size, 0)
+  const formatSizeMB = (bytes: number) => `${(bytes / (1024 * 1024)).toFixed(2)} MB`
   const selectedFiles = files.filter((f) => f.selectedPages.length > 0)
   const activeFile = activeId ? files.find((f) => f.id === activeId) : null
 
@@ -352,6 +354,10 @@ export default function MergePage() {
                 <div className={styles.panelStat}>
                   <span className={styles.panelStatLabel}>Total Pages</span>
                   <span className={styles.panelStatValue}>{files.reduce((acc, f) => acc + f.pageCount, 0)}</span>
+                </div>
+                <div className={styles.panelStat}>
+                  <span className={styles.panelStatLabel}>Total Size</span>
+                  <span className={styles.panelStatValue}>{formatSizeMB(totalSize)}</span>
                 </div>
                 <div className={styles.panelStat}>
                   <span className={styles.panelStatLabel}>{t('merge.selected')}</span>
