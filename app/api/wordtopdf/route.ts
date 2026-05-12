@@ -4,12 +4,8 @@ import mammoth from 'mammoth'
 const MAX_SIZE = 4.5 * 1024 * 1024
 
 async function generatePdf(html: string): Promise<Buffer> {
-  const pdfMakeModule = await import('pdfmake/build/pdfmake')
-  const pdfFontsModule = await import('pdfmake/build/vfs_fonts')
-  const pdfMake = (pdfMakeModule as any).default || pdfMakeModule
-  const pdfFonts = (pdfFontsModule as any).default || pdfFontsModule
-
-  pdfMake.vfs = pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfFonts
+  const pdfMakeModule = await import('pdfmake/build/pdfmake.min.js')
+  const pdfMake: any = pdfMakeModule.default || pdfMakeModule
 
   const content: any[] = []
 
@@ -80,23 +76,25 @@ async function generatePdf(html: string): Promise<Buffer> {
   }
 
   return new Promise((resolve, reject) => {
-    const docDefinition = {
-      content,
-      defaultStyle: {
-        font: 'Roboto',
-        fontSize: 11,
-      },
-      pageSize: 'A4',
-      pageMargins: [60, 60, 60, 60],
+    try {
+      const docDefinition = {
+        content,
+        defaultStyle: {
+          font: 'Roboto',
+          fontSize: 11,
+        },
+        pageSize: 'A4',
+        pageMargins: [60, 60, 60, 60],
+      }
+
+      const pdfDoc = pdfMake.createPdf(docDefinition)
+
+      pdfDoc.getBuffer((buffer: Buffer) => {
+        resolve(Buffer.from(buffer))
+      })
+    } catch (err) {
+      reject(err)
     }
-
-    const pdfDoc = pdfMake.createPdf(docDefinition)
-
-    pdfDoc.getBuffer((buffer: any) => {
-      resolve(Buffer.from(buffer))
-    })
-
-    pdfDoc.on('error', (err: Error) => reject(err))
   })
 }
 
