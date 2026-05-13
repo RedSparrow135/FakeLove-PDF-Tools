@@ -6,8 +6,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #0a0a0f;
-  animation: fadeIn 0.3s ease-out;
+  background: #050507;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .background {
@@ -21,15 +26,15 @@
   position: absolute;
   inset: 0;
   background-image: 
-    linear-gradient(rgba(220, 38, 38, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(220, 38, 38, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  animation: gridPulse 4s ease-in-out infinite;
+    linear-gradient(rgba(255, 46, 99, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 46, 99, 0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+  animation: gridShift 20s linear infinite;
 }
 
-@keyframes gridPulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+@keyframes gridShift {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(80px, 80px); }
 }
 
 .glowPulse {
@@ -37,20 +42,47 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(220, 38, 38, 0.15), transparent 60%);
-  animation: glowPulse 3s ease-in-out infinite;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(255, 46, 99, 0.12), transparent 50%);
+  animation: glowPulse 4s ease-in-out infinite;
 }
 
 @keyframes glowPulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
-  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(1); 
+    opacity: 0.6; 
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.15); 
+    opacity: 1; 
+  }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.particles {
+  position: absolute;
+  inset: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #ff2e63;
+  border-radius: 50%;
+  opacity: 0;
+  animation: particleFloat 5s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0%, 100% { 
+    opacity: 0;
+    transform: translateY(0) scale(0);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: translateY(-30px) scale(1);
+  }
 }
 
 .content {
@@ -59,92 +91,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
-  max-width: 500px;
-  width: 100%;
-  padding: 0 20px;
-}
-
-.logoContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  animation: slideUp 0.6s ease-out;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.logoIcon {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #dc2626, #f43f5e);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  box-shadow: 
-    0 8px 32px rgba(220, 38, 38, 0.4),
-    0 0 60px rgba(220, 38, 38, 0.2);
-  animation: logoPulse 2s ease-in-out infinite;
-  
-  svg {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-@keyframes logoPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-.logoText {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.titleText {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  font-weight: 700;
-  color: #f9fafb;
-  letter-spacing: 0.15em;
-  text-shadow: 0 0 30px rgba(220, 38, 38, 0.5);
-}
-
-.cursor {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.5rem;
-  color: #dc2626;
-  animation: blink 0.8s step-end infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  gap: 48px;
+  padding: 0 24px;
 }
 
 .cardiogramContainer {
   width: 100%;
   max-width: 400px;
   height: 60px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 46, 99, 0.2);
   border-radius: 8px;
   overflow: hidden;
-  animation: slideUp 0.6s ease-out 0.2s backwards;
+  position: relative;
+}
+
+.cardiogramContainer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 46, 99, 0.05) 0%, transparent 50%);
 }
 
 .cardiogram {
@@ -152,34 +118,54 @@
   height: 100%;
 }
 
-.cardioLineHidden {
-  opacity: 0;
+.cardioGlow {
+  opacity: 0.4;
 }
 
 .cardioLine {
-  opacity: 1;
-  animation: cardioDraw 0.1s ease-out;
+  stroke-dasharray: 500;
+  stroke-dashoffset: 0;
+  animation: cardioDraw 2s ease-out forwards, cardioPulse 1.5s ease-in-out infinite 2s;
 }
 
-.cardioGlow {
-  animation: cardioGlow 1.5s ease-in-out infinite;
+@keyframes cardioDraw {
+  from { stroke-dashoffset: 500; }
+  to { stroke-dashoffset: 0; }
 }
 
-@keyframes cardioGlow {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 0.5; }
+@keyframes cardioPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.heartDot {
+  animation: heartBeat 1s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+  0%, 100% { r: 3; opacity: 1; }
+  15% { r: 5; opacity: 1; }
+  30% { r: 3; opacity: 0.8; }
+  45% { r: 4; opacity: 1; }
+  60% { r: 3; opacity: 0.9; }
 }
 
 .statusContainer {
-  animation: slideUp 0.6s ease-out 0.3s backwards;
+  text-align: center;
 }
 
 .statusText {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-  color: #6b7280;
-  letter-spacing: 0.1em;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
 }
 
 .progressContainer {
@@ -187,82 +173,125 @@
   align-items: center;
   gap: 16px;
   width: 100%;
-  max-width: 300px;
-  animation: slideUp 0.6s ease-out 0.4s backwards;
+  max-width: 320px;
 }
 
-.progressBar {
+.progressTrack {
   flex: 1;
-  height: 4px;
+  height: 3px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  overflow: hidden;
+  border-radius: 3px;
+  overflow: visible;
+  position: relative;
 }
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, #dc2626, #f43f5e);
-  border-radius: 4px;
+  background: linear-gradient(90deg, #ff2e63, #ff0040);
+  border-radius: 3px;
   transition: width 0.1s ease-out;
-  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background: #ff2e63;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #ff2e63;
+  }
+}
+
+.progressGlow {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, rgba(255, 46, 99, 0.5), transparent);
+  pointer-events: none;
+  transition: left 0.1s ease-out;
 }
 
 .progressPercent {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  color: #9ca3af;
+  font-size: 0.7rem;
+  color: #ff2e63;
   min-width: 40px;
   text-align: right;
+  text-shadow: 0 0 10px rgba(255, 46, 99, 0.5);
+}
+
+.barcodeContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.barcodeLine {
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 46, 99, 0.5), transparent);
+}
+
+.barcodeText {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: rgba(255, 46, 99, 0.6);
+  letter-spacing: 0.3em;
 }
 
 .footer {
   position: absolute;
-  bottom: 40px;
+  bottom: 48px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  animation: fadeIn 0.6s ease-out 0.5s backwards;
+  gap: 16px;
 }
 
-.footerText {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  color: #6b7280;
+.footerBrand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #f9fafb;
   letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 
-.footerDivider {
-  color: #374151;
+.footerVersion {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: #6b7280;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
 }
 
-.footerBinary {
-  font-size: 1rem;
-  color: #dc2626;
-  animation: heartbeat 1s ease-in-out infinite;
+.footerHeart {
+  animation: heartBeat 1s ease-in-out infinite;
+  
+  svg {
+    filter: drop-shadow(0 0 6px rgba(255, 46, 99, 0.6));
+  }
 }
 
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  15% { transform: scale(1.3); }
-  30% { transform: scale(1); }
-  45% { transform: scale(1.15); }
-  60% { transform: scale(1); }
+.footerDev {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: #6b7280;
+  letter-spacing: 0.15em;
 }
 
 @media (max-width: 480px) {
-  .logoIcon {
-    width: 60px;
-    height: 60px;
-    
-    svg {
-      width: 30px;
-      height: 30px;
-    }
+  .cardiogramContainer {
+    max-width: 280px;
   }
   
-  .cardiogramContainer {
-    max-width: 300px;
-    height: 50px;
+  .progressContainer {
+    max-width: 260px;
   }
 }

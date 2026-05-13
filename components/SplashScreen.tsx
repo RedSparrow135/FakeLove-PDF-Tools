@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import styles from './SplashScreen.module.scss'
+import AnimatedLogo from './AnimatedLogo'
 
 interface SplashScreenProps {
   onComplete: () => void
@@ -10,116 +11,156 @@ interface SplashScreenProps {
 
 export default function SplashScreen({ onComplete, minDuration = 3000 }: SplashScreenProps) {
   const [progress, setProgress] = useState(0)
-  const [text, setText] = useState('')
-  const fullText = 'FAKE LOVE PDF TOOLS'
-  const [showCardiogram, setShowCardiogram] = useState(false)
+  const [phase, setPhase] = useState(0)
 
   useEffect(() => {
     let currentProgress = 0
-    let charIndex = 0
     
     const progressInterval = setInterval(() => {
-      currentProgress += 2
+      currentProgress += 1.5
       setProgress(Math.min(currentProgress, 100))
-      
-      if (currentProgress >= 30) {
-        setShowCardiogram(true)
-      }
-      
-      if (currentProgress >= 50 && charIndex < fullText.length) {
-        setText(fullText.slice(0, charIndex + 1))
-        charIndex++
-      }
       
       if (currentProgress >= 100) {
         clearInterval(progressInterval)
-        setTimeout(onComplete, 500)
+        setTimeout(onComplete, 400)
       }
-    }, minDuration / 50)
+    }, minDuration / 70)
 
     return () => clearInterval(progressInterval)
   }, [minDuration, onComplete])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhase(p => (p + 1) % 100)
+    }, 50)
+    return () => clearInterval(interval)
+  }, [])
+
+  const statusMessages = [
+    'Initializing system...',
+    'Loading core modules...',
+    'Calibrating cardiogram...',
+    'Establishing neural link...',
+    'Decrypting emotions...',
+    'Ready.'
+  ]
+
+  const getStatusMessage = () => {
+    const index = Math.min(Math.floor((progress / 100) * statusMessages.length), statusMessages.length - 1)
+    return statusMessages[index]
+  }
+
+  const cardioPoints = [
+    `M0,30 L20,30 L25,30 L30,15 L35,45 L40,20 L45,35 L50,30 L70,30`,
+    `L75,30 L80,30 L85,15 L90,45 L95,20 L100,35 L105,30`,
+  ].join(' ')
 
   return (
     <div className={styles.splash}>
       <div className={styles.background}>
         <div className={styles.gridLines} />
         <div className={styles.glowPulse} />
+        <div className={styles.particles}>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div 
+              key={i} 
+              className={styles.particle}
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${3 + Math.random() * 4}s`,
+              }}
+            />
+          ))}
+        </div>
       </div>
 
       <div className={styles.content}>
-        <div className={styles.logoContainer}>
-          <div className={styles.logoIcon}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-            </svg>
-          </div>
-          
-          <div className={styles.logoText}>
-            <span className={styles.titleText}>{text}</span>
-            <span className={styles.cursor}>_</span>
-          </div>
-        </div>
+        <AnimatedLogo size="large" animated={true} />
 
         <div className={styles.cardiogramContainer}>
-          <svg className={styles.cardiogram} viewBox="0 0 400 60" preserveAspectRatio="none">
+          <svg className={styles.cardiogram} viewBox="0 0 200 60" preserveAspectRatio="none">
             <defs>
-              <linearGradient id="cardioGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#dc2626" stopOpacity="0.3" />
-                <stop offset="50%" stopColor="#dc2626" stopOpacity="1" />
-                <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.3" />
+              <linearGradient id="splashCardioGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#ff2e63" stopOpacity="0.1" />
+                <stop offset="30%" stopColor="#ff2e63" stopOpacity="1" />
+                <stop offset="70%" stopColor="#ff0040" stopOpacity="1" />
+                <stop offset="100%" stopColor="#ff2e63" stopOpacity="0.1" />
               </linearGradient>
+              <filter id="splashGlow">
+                <feGaussianBlur stdDeviation="2" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
             </defs>
+            
             <path
-              className={showCardiogram ? styles.cardioLine : styles.cardioLineHidden}
-              d="M0,30 L80,30 L90,30 L95,10 L100,50 L105,20 L110,35 L115,30 L120,30 L400,30"
-              stroke="url(#cardioGradient)"
-              strokeWidth="2"
+              className={styles.cardioGlow}
+              d={cardioPoints}
               fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              className={showCardiogram ? styles.cardioGlow : styles.cardioLineHidden}
-              d="M0,30 L80,30 L90,30 L95,10 L100,50 L105,20 L110,35 L115,30 L120,30 L400,30"
-              stroke="#dc2626"
+              stroke="#ff2e63"
               strokeWidth="4"
-              fill="none"
               strokeLinecap="round"
-              strokeLinejoin="round"
-              opacity="0.3"
-              filter="blur(4px)"
+              filter="url(#splashGlow)"
+            />
+            
+            <path
+              className={styles.cardioLine}
+              d={cardioPoints}
+              fill="none"
+              stroke="url(#splashCardioGrad)"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            
+            <circle 
+              className={styles.heartDot}
+              cx={100 + Math.sin(phase / 10) * 2}
+              cy={30 + Math.cos(phase / 10) * 2}
+              r="3"
+              fill="#ff2e63"
+              filter="url(#splashGlow)"
             />
           </svg>
         </div>
 
         <div className={styles.statusContainer}>
-          <span className={styles.statusText}>
-            {progress < 30 && 'Initializing system...'}
-            {progress >= 30 && progress < 60 && 'Loading modules...'}
-            {progress >= 60 && progress < 90 && 'Preparing interface...'}
-            {progress >= 90 && 'Ready!'}
-          </span>
+          <span className={styles.statusText}>{getStatusMessage()}</span>
         </div>
 
         <div className={styles.progressContainer}>
-          <div className={styles.progressBar}>
+          <div className={styles.progressTrack}>
             <div 
               className={styles.progressFill} 
               style={{ width: `${progress}%` }}
             />
+            <div 
+              className={styles.progressGlow}
+              style={{ left: `${progress}%` }}
+            />
           </div>
-          <span className={styles.progressPercent}>{progress}%</span>
+          <span className={styles.progressPercent}>{Math.round(progress)}%</span>
+        </div>
+
+        <div className={styles.barcodeContainer}>
+          <span className={styles.barcodeLine} />
+          <span className={styles.barcodeText}>SYS.OK</span>
+          <span className={styles.barcodeLine} />
         </div>
       </div>
 
       <div className={styles.footer}>
-        <span className={styles.footerText}>CHARLE-X</span>
-        <span className={styles.footerDivider}>|</span>
-        <span className={styles.footerBinary}>
-          {showCardiogram ? '♥' : '♡'}
+        <span className={styles.footerBrand}>FAKELOVE</span>
+        <span className={styles.footerVersion}>v1.0.0</span>
+        <span className={styles.footerHeart}>
+          <svg viewBox="0 0 24 24" fill="#ff2e63" width="14" height="14">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
         </span>
+        <span className={styles.footerDev}>CHARLE-X</span>
       </div>
     </div>
   )

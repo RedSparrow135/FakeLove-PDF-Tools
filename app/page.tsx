@@ -37,6 +37,7 @@ import { useLanguage } from '@/lib/language'
 import { themes, getTheme, Theme } from '@/lib/themes'
 import FileUploader from '@/components/FileUploader'
 import SplashScreen from '@/components/SplashScreen'
+import AnimatedLogo from '@/components/AnimatedLogo'
 import styles from './page.module.scss'
 
 type Category = 'dashboard' | 'pdf-tools' | 'convert' | 'history' | 'settings'
@@ -139,15 +140,7 @@ export default function DashboardPage() {
       {/* Sidebar */}
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          <div className={styles.logo}>
-            <div className={styles.logoIcon}>
-              <FilePlus size={20} strokeWidth={1.5} />
-            </div>
-            <div className={styles.logoText}>
-              <span className={styles.logoTitle}>FAKE LOVE</span>
-              <span className={styles.logoSubtitle}>PDF SUITE</span>
-            </div>
-          </div>
+          <AnimatedLogo size="small" animated={false} />
         </div>
 
         <nav className={styles.nav}>
