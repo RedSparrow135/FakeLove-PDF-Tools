@@ -20,12 +20,12 @@ function cardiogramY(x: number): number {
   const r = 2 * gaussian(x, 3.3, 0.08)
   const s = -1 * gaussian(x, 3.4, 0.15)
   const t = 0.5 * gaussian(x, 4, 0.3)
-  return p + q + r + s + t
+  return -(p + q + r + s + t)
 }
 
 export default function CardiogramECG({ 
   className = '', 
-  speed = 2,
+  speed = 3,
   showBpmBoost = false,
   progress = 0
 }: CardiogramECGProps) {

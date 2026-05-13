@@ -17,12 +17,13 @@ function cardiogramY(x: number): number {
   const r = 2 * gaussian(x, 3.3, 0.08)
   const s = -1 * gaussian(x, 3.4, 0.15)
   const t = 0.5 * gaussian(x, 4, 0.3)
-  return p + q + r + s + t
+  return -(p + q + r + s + t)
 }
 
 export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isHovered, setIsHovered] = useState(false)
+  const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -31,15 +32,36 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const dpr = window.devicePixelRatio || 1
-    const rect = canvas.getBoundingClientRect()
-    
-    if (canvas.width !== rect.width * dpr || canvas.height !== rect.height * dpr) {
+    const initCanvas = () => {
+      const dpr = window.devicePixelRatio || 1
+      const rect = canvas.getBoundingClientRect()
+      
+      if (rect.width === 0 || rect.height === 0) {
+        setTimeout(initCanvas, 50)
+        return
+      }
+
       canvas.width = rect.width * dpr
       canvas.height = rect.height * dpr
       ctx.scale(dpr, dpr)
+
+      setIsReady(true)
     }
 
+    initCanvas()
+  }, [])
+
+  useEffect(() => {
+    if (!isReady) return
+
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const dpr = window.devicePixelRatio || 1
+    const rect = canvas.getBoundingClientRect()
     const width = rect.width
     const height = rect.height
     const baseline = height / 2
@@ -51,7 +73,7 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     function draw() {
       if (!ctx) return
 
-      const effectiveSpeed = isHovered ? 1.5 : 1
+      const effectiveSpeed = isHovered ? 2.5 : 1.5
 
       ctx.clearRect(0, 0, width, height)
 
@@ -125,7 +147,7 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
 
     const animationId = requestAnimationFrame(draw)
     return () => cancelAnimationFrame(animationId)
-  }, [isHovered])
+  }, [isHovered, isReady])
 
   const sizes = {
     small: { titleSize: '1rem', subtitleSize: '0.45rem', canvasHeight: '14px' },
