@@ -44,16 +44,16 @@ type Category = 'dashboard' | 'pdf-tools' | 'convert' | 'history' | 'settings'
 
 const operations = {
   'pdf-tools': [
-    { key: 'merge', icon: GitMerge, title: 'MERGE', desc: 'Combine multiple documents', href: '/merge', color: '#dc2626', tag: 'PDF' },
-    { key: 'split', icon: Scissors, title: 'SPLIT', desc: 'Extract specific pages', href: '/split', color: '#f43f5e', tag: 'PDF' },
-    { key: 'compress', icon: Archive, title: 'COMPRESS', desc: 'Reduce file size', href: '/compress', color: '#a855f7', tag: 'OPT' },
-    { key: 'imagetopdf', icon: Image, title: 'IMAGE PDF', desc: 'Convert images to PDF', href: '/imagetopdf', color: '#ec4899', tag: 'IMG' },
+    { key: 'merge', icon: GitMerge, href: '/merge', color: '#dc2626', tag: 'PDF' },
+    { key: 'split', icon: Scissors, href: '/split', color: '#f43f5e', tag: 'PDF' },
+    { key: 'compress', icon: Archive, href: '/compress', color: '#a855f7', tag: 'OPT' },
+    { key: 'imagetopdf', icon: Image, href: '/imagetopdf', color: '#ec4899', tag: 'IMG' },
   ],
   convert: [
-    { key: 'word', icon: FileText, title: 'WORD PDF', desc: 'DOC/DOCX to PDF', href: '/more-tools/word', color: '#3b82f6', tag: 'DOC' },
-    { key: 'excel', icon: Table, title: 'EXCEL PDF', desc: 'XLS/XLSX to PDF', href: '/more-tools/excel', color: '#10b981', tag: 'SPR' },
-    { key: 'pptx', icon: Presentation, title: 'PPTX PDF', desc: 'PPT/PPTX to PDF', href: '/more-tools/pptx', color: '#f59e0b', tag: 'SLD' },
-    { key: 'jpg', icon: Monitor, title: 'JPG PDF', desc: 'JPG/PNG to PDF', href: '/more-tools/jpg', color: '#8b5cf6', tag: 'IMG' },
+    { key: 'word', icon: FileText, href: '/more-tools/word', color: '#3b82f6', tag: 'DOC' },
+    { key: 'excel', icon: Table, href: '/more-tools/excel', color: '#10b981', tag: 'SPR' },
+    { key: 'pptx', icon: Presentation, href: '/more-tools/pptx', color: '#f59e0b', tag: 'SLD' },
+    { key: 'jpg', icon: Monitor, href: '/more-tools/jpg', color: '#8b5cf6', tag: 'IMG' },
   ],
 }
 
@@ -206,7 +206,7 @@ export default function DashboardPage() {
             <Search size={16} strokeWidth={1.5} className={styles.searchIcon} />
             <input
               type="text"
-              placeholder="Search files or operations..."
+              placeholder={t('navbar.search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={styles.searchInput}
@@ -216,7 +216,7 @@ export default function DashboardPage() {
           <div className={styles.navbarRight}>
             <div className={styles.statusIndicator}>
               <span className={styles.statusDot} />
-              <span className={styles.statusText}>System Online</span>
+              <span className={styles.statusText}>{t('navbar.systemOnline')}</span>
             </div>
 
             <div className={styles.notificationWrapper}>
@@ -232,7 +232,7 @@ export default function DashboardPage() {
                 <div className={styles.notificationDropdown}>
                   <div className={styles.notificationHeader}>
                     <span>{t('notifications.title')}</span>
-                    {activeProcesses > 0 && <span className={styles.notifCount}>{activeProcesses} active</span>}
+                    {activeProcesses > 0 && <span className={styles.notifCount}>{activeProcesses} {t('navbar.activeTasks')}</span>}
                   </div>
                   <div className={styles.notificationList}>
                     {activeProcesses === 0 ? (
@@ -335,15 +335,15 @@ export default function DashboardPage() {
                     <FilePlus size={24} strokeWidth={1.5} />
                   </div>
                   <div className={styles.introText}>
-                    <h3>FakeLove PDF Tools</h3>
-                    <p>Professional PDF manipulation with a sarcastic twist. No limits, no judgments, just results.</p>
+                    <h3>{t('intro.title')}</h3>
+                    <p>{t('intro.desc')}</p>
                   </div>
                 </div>
                 <div className={styles.introTags}>
-                  <span className={styles.introTag}>PDF Merge</span>
-                  <span className={styles.introTag}>PDF Split</span>
-                  <span className={styles.introTag}>Image → PDF</span>
-                  <span className={styles.introTag}>Word → PDF</span>
+                  <span className={styles.introTag}>{t('intro.tag.merge')}</span>
+                  <span className={styles.introTag}>{t('intro.tag.split')}</span>
+                  <span className={styles.introTag}>{t('intro.tag.image')}</span>
+                  <span className={styles.introTag}>{t('intro.tag.word')}</span>
                 </div>
                 <a 
                   href="https://github.com/RedSparrow135/FakeLove-PDF-Tools" 
@@ -352,7 +352,7 @@ export default function DashboardPage() {
                   className={styles.introGithub}
                 >
                   <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                  View on GitHub
+                  {t('intro.github')}
                 </a>
               </div>
 
@@ -372,8 +372,8 @@ export default function DashboardPage() {
                       <div className={styles.toolIcon}>
                         <tool.icon size={28} strokeWidth={1.5} />
                       </div>
-                      <h3>{tool.title}</h3>
-                      <p>{t(`tool.${tool.key}.desc` as any) || tool.desc}</p>
+                      <h3>{t(`tool.${tool.key}.title` as any)}</h3>
+                      <p>{t(`tool.${tool.key}.desc` as any)}</p>
                     </Link>
                   ))}
                 </div>
@@ -399,9 +399,9 @@ export default function DashboardPage() {
                     <div className={styles.toolIcon}>
                       <tool.icon size={32} strokeWidth={1.5} />
                     </div>
-                    <h3>{tool.title}</h3>
-                    <p>{t(`tool.${tool.key}.desc` as any) || tool.desc}</p>
-                    <span className={styles.toolTag}>{tool.tag}</span>
+<h3>{t(`tool.${tool.key}.title` as any)}</h3>
+                      <p>{t(`tool.${tool.key}.desc` as any)}</p>
+                      <span className={styles.toolTag}>{tool.tag}</span>
                   </Link>
                 ))}
               </div>
@@ -426,9 +426,9 @@ export default function DashboardPage() {
                     <div className={styles.toolIcon}>
                       <tool.icon size={32} strokeWidth={1.5} />
                     </div>
-                    <h3>{tool.title}</h3>
-                    <p>{t(`tool.${tool.key}.desc` as any) || tool.desc}</p>
-                    <span className={styles.toolTag}>{tool.tag}</span>
+<h3>{t(`tool.${tool.key}.title` as any)}</h3>
+                      <p>{t(`tool.${tool.key}.desc` as any)}</p>
+                      <span className={styles.toolTag}>{tool.tag}</span>
                   </Link>
                 ))}
               </div>
@@ -460,12 +460,12 @@ export default function DashboardPage() {
               ) : (
                 <div className={styles.activityTable}>
                   <div className={styles.tableHeader}>
-                    <span>FILE</span>
-                    <span>OPERATION</span>
-                    <span>STATUS</span>
-                    <span>TIME</span>
-                    <span>SIZE</span>
-                    <span>ACTIONS</span>
+                    <span>{t('table.file')}</span>
+                    <span>{t('table.operation')}</span>
+                    <span>{t('table.status')}</span>
+                    <span>{t('table.time')}</span>
+                    <span>{t('table.size')}</span>
+                    <span>{t('table.actions')}</span>
                   </div>
                   {recentProcesses.map((item, index) => (
                     <div key={item.id} className={styles.tableRow} style={{ '--index': index } as any}>
