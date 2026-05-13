@@ -7,6 +7,19 @@ interface AnimatedLogoProps {
   size?: 'small' | 'medium' | 'large'
 }
 
+function gaussian(x: number, mean: number, sigma: number): number {
+  return Math.exp(-Math.pow(x - mean, 2) / (2 * sigma * sigma))
+}
+
+function cardiogramY(x: number): number {
+  const p = 0.6 * Math.sin(x) * gaussian(x, 3, 0.3)
+  const q = -1.5 * gaussian(x, 3.2, 0.15)
+  const r = 2 * gaussian(x, 3.3, 0.08)
+  const s = -1 * gaussian(x, 3.4, 0.15)
+  const t = 0.5 * gaussian(x, 4, 0.3)
+  return p + q + r + s + t
+}
+
 export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isHovered, setIsHovered] = useState(false)
@@ -32,89 +45,82 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     const baseline = height / 2
     const amplitude = height * 0.4
 
-    const getY = (t: number): number => {
-      if (t < 5) return 0
-      if (t < 10) return -1
-      if (t < 15) return 0
-      if (t < 20) return 0
-      if (t < 25) return 2
-      if (t < 30) return -30
-      if (t < 35) return 8
-      if (t < 45) return 0
-      if (t < 55) return -4
-      if (t < 65) return 0
-      return 0
-    }
-
-    let x = 0
-    let time = 0
     const cycleLength = 100
+    let phase = 0
 
     function draw() {
       if (!ctx) return
 
-      const speed = isHovered ? 1.5 : 1
+      const effectiveSpeed = isHovered ? 1.5 : 1
 
-      const tCycle = (time % cycleLength) / cycleLength * 100
-      const yVal = getY(tCycle)
-      const newY = baseline + (yVal * amplitude / 30)
+      ctx.clearRect(0, 0, width, height)
 
-      const glowSize = isHovered ? 25 : 18
+      const points: [number, number][] = []
+      const samples = 80
+
+      for (let i = 0; i < samples; i++) {
+        const t = ((phase + i) % cycleLength) / cycleLength * Math.PI * 6
+        const yVal = cardiogramY(t)
+        const xPos = (i / samples) * width
+        const yPos = baseline - yVal * amplitude
+        points.push([xPos, yPos])
+      }
+
+      const glowSize = isHovered ? 20 : 15
 
       ctx.beginPath()
       ctx.strokeStyle = '#ff0000'
-      ctx.lineWidth = 4.5
+      ctx.lineWidth = 4
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
       ctx.shadowBlur = glowSize
       ctx.shadowColor = '#ff0000'
-      ctx.moveTo(x === 0 ? 0 : x - speed, baseline)
-      ctx.lineTo(x + speed, newY)
+      ctx.moveTo(points[0][0], points[0][1])
+      for (let j = 1; j < points.length; j++) {
+        ctx.lineTo(points[j][0], points[j][1])
+      }
       ctx.stroke()
 
       ctx.beginPath()
       ctx.strokeStyle = '#ff3333'
-      ctx.lineWidth = 3.5
-      ctx.shadowBlur = glowSize * 0.7
+      ctx.lineWidth = 3
+      ctx.shadowBlur = glowSize * 0.6
       ctx.shadowColor = '#ff0000'
-      ctx.moveTo(x === 0 ? 0 : x - speed, baseline)
-      ctx.lineTo(x + speed, newY)
+      ctx.moveTo(points[0][0], points[0][1])
+      for (let j = 1; j < points.length; j++) {
+        ctx.lineTo(points[j][0], points[j][1])
+      }
       ctx.stroke()
 
       ctx.beginPath()
       ctx.strokeStyle = '#ff6666'
-      ctx.lineWidth = 2.5
-      ctx.shadowBlur = glowSize * 0.4
+      ctx.lineWidth = 2
+      ctx.shadowBlur = glowSize * 0.3
       ctx.shadowColor = '#ff0000'
-      ctx.moveTo(x === 0 ? 0 : x - speed, baseline)
-      ctx.lineTo(x + speed, newY)
+      ctx.moveTo(points[0][0], points[0][1])
+      for (let j = 1; j < points.length; j++) {
+        ctx.lineTo(points[j][0], points[j][1])
+      }
       ctx.stroke()
 
       ctx.beginPath()
       ctx.strokeStyle = '#ffffff'
-      ctx.lineWidth = 1.5
+      ctx.lineWidth = 1
       ctx.shadowBlur = 0
-      ctx.moveTo(x === 0 ? 0 : x - speed, baseline)
-      ctx.lineTo(x + speed, newY)
+      ctx.moveTo(points[0][0], points[0][1])
+      for (let j = 1; j < points.length; j++) {
+        ctx.lineTo(points[j][0], points[j][1])
+      }
       ctx.stroke()
 
-      x += speed
-      time += speed
-
-      if (x > width) {
-        ctx.clearRect(0, 0, 10, height)
-        x = 0
-      }
-
-      if (x >= width - 10) {
-        ctx.clearRect(width - 15, 0, 20, height)
-        x = width - 15
+      phase += effectiveSpeed
+      if (phase >= cycleLength) {
+        phase = 0
       }
 
       requestAnimationFrame(draw)
     }
 
-    ctx.fillStyle = 'transparent'
     ctx.clearRect(0, 0, width, height)
 
     const animationId = requestAnimationFrame(draw)

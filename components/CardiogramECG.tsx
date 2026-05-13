@@ -10,9 +10,22 @@ interface CardiogramECGProps {
   progress?: number
 }
 
+function gaussian(x: number, mean: number, sigma: number): number {
+  return Math.exp(-Math.pow(x - mean, 2) / (2 * sigma * sigma))
+}
+
+function cardiogramY(x: number): number {
+  const p = 0.6 * Math.sin(x) * gaussian(x, 3, 0.3)
+  const q = -1.5 * gaussian(x, 3.2, 0.15)
+  const r = 2 * gaussian(x, 3.3, 0.08)
+  const s = -1 * gaussian(x, 3.4, 0.15)
+  const t = 0.5 * gaussian(x, 4, 0.3)
+  return p + q + r + s + t
+}
+
 export default function CardiogramECG({ 
   className = '', 
-  speed = 1.5,
+  speed = 2,
   showBpmBoost = false,
   progress = 0
 }: CardiogramECGProps) {
@@ -37,7 +50,7 @@ export default function CardiogramECG({
     const width = rect.width
     const height = rect.height
     const baseline = height / 2
-    const amplitude = height * 0.4
+    const amplitude = height * 0.35
 
     const getBpm = (): number => {
       if (showBpmBoost && progress > 80) {
@@ -46,90 +59,70 @@ export default function CardiogramECG({
       return 76
     }
 
-    const cycleLength = (): number => {
+    const getCycleLength = (): number => {
       const bpm = getBpm()
-      return Math.round(60000 / bpm / 16.67)
+      return Math.round(60000 / bpm / 12)
     }
 
-    const getY = (t: number): number => {
-      if (t < 5) return 0
-      if (t < 12) return -2
-      if (t < 18) return 0
-      if (t < 24) return 0
-      if (t < 28) return 4
-      if (t < 34) return -32
-      if (t < 40) return 10
-      if (t < 50) return 0
-      if (t < 60) return -5
-      if (t < 70) return 0
-      if (t < 80) return -2
-      return 0
-    }
-
-    let x = 0
-    let time = 0
-    let lastCycleLength = cycleLength()
+    let phase = 0
+    let cycleLength = getCycleLength()
 
     const draw = () => {
-      const bpm = getBpm()
-      const currentCycleLength = cycleLength()
+      const currentBpm = getBpm()
+      cycleLength = getCycleLength()
 
-      if (currentCycleLength !== lastCycleLength) {
-        lastCycleLength = currentCycleLength
+      ctx.fillStyle = '#050505'
+      ctx.fillRect(0, 0, width, height)
+
+      const points: [number, number][] = []
+      const samples = 120
+
+      for (let i = 0; i < samples; i++) {
+        const t = ((phase + i) % cycleLength) / cycleLength * Math.PI * 6
+        const yVal = cardiogramY(t)
+        const xPos = (i / samples) * width
+        const yPos = baseline - yVal * amplitude
+        points.push([xPos, yPos])
       }
 
-      const tCycle = (time % currentCycleLength) / currentCycleLength * 100
-      const yVal = getY(tCycle)
-      const newY = baseline + (yVal * amplitude / 30)
+      const gradient = ctx.createLinearGradient(0, 0, width, 0)
+      gradient.addColorStop(0, 'rgba(255, 0, 0, 0)')
+      gradient.addColorStop(0.1, 'rgba(255, 0, 0, 0.3)')
+      gradient.addColorStop(0.5, 'rgba(255, 0, 0, 0.8)')
+      gradient.addColorStop(0.9, 'rgba(255, 0, 0, 0.3)')
+      gradient.addColorStop(1, 'rgba(255, 0, 0, 0)')
 
-      ctx.beginPath()
-      ctx.strokeStyle = '#ff0000'
-      ctx.lineWidth = 5
-      ctx.lineCap = 'round'
-      ctx.lineJoin = 'round'
-      ctx.shadowBlur = 28
-      ctx.shadowColor = '#ff0000'
-      ctx.moveTo(x, baseline)
-      ctx.lineTo(x + speed, newY)
-      ctx.stroke()
+      for (let w = 5; w >= 1; w--) {
+        ctx.beginPath()
+        ctx.strokeStyle = w === 5 ? '#ff0000' : w === 4 ? '#ff3333' : w === 3 ? '#ff6666' : w === 2 ? '#ff9999' : '#ffffff'
+        ctx.lineWidth = w
+        ctx.lineCap = 'round'
+        ctx.lineJoin = 'round'
+        
+        if (w <= 5) {
+          ctx.shadowBlur = 25 - (5 - w) * 4
+          ctx.shadowColor = '#ff0000'
+        } else {
+          ctx.shadowBlur = 0
+        }
 
-      ctx.beginPath()
-      ctx.strokeStyle = '#ff3333'
-      ctx.lineWidth = 4
-      ctx.shadowBlur = 22
-      ctx.shadowColor = '#ff0000'
-      ctx.moveTo(x, baseline)
-      ctx.lineTo(x + speed, newY)
-      ctx.stroke()
-
-      ctx.beginPath()
-      ctx.strokeStyle = '#ff6666'
-      ctx.lineWidth = 3
-      ctx.shadowBlur = 16
-      ctx.shadowColor = '#ff0000'
-      ctx.moveTo(x, baseline)
-      ctx.lineTo(x + speed, newY)
-      ctx.stroke()
-
-      ctx.beginPath()
-      ctx.strokeStyle = '#ffffff'
-      ctx.lineWidth = 2
-      ctx.shadowBlur = 0
-      ctx.moveTo(x, baseline)
-      ctx.lineTo(x + speed, newY)
-      ctx.stroke()
-
-      x += speed
-      time += speed
-
-      if (x > width) {
-        ctx.clearRect(0, 0, 10, height)
+        ctx.moveTo(points[0][0], points[0][1])
+        for (let j = 1; j < points.length; j++) {
+          ctx.lineTo(points[j][0], points[j][1])
+        }
+        ctx.stroke()
       }
 
-      if (x >= width - 20) {
-        ctx.fillStyle = '#050505'
-        ctx.fillRect(width - 15, 0, 20, height)
-        x = width - 20
+      const sweepX = (phase / cycleLength) * width * 6
+      const sweepGradient = ctx.createLinearGradient(sweepX - 50, 0, sweepX, 0)
+      sweepGradient.addColorStop(0, 'rgba(255, 0, 0, 0)')
+      sweepGradient.addColorStop(1, 'rgba(255, 0, 0, 0.15)')
+      ctx.fillStyle = sweepGradient
+      ctx.fillRect(sweepX - 50, 0, 50, height)
+
+      phase += speed
+      if (phase >= cycleLength) {
+        phase = 0
       }
 
       requestAnimationFrame(draw)
