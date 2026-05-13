@@ -7,6 +7,15 @@ interface AnimatedLogoProps {
   size?: 'small' | 'medium' | 'large'
 }
 
+function getHeartbeatY(phase: number, height: number, baseline: number): number {
+  if (phase < 1) return baseline
+  if (phase < 1.5) return baseline - (phase - 1) * height * 0.4
+  if (phase < 2) return baseline - (2 - phase) * height * 0.4
+  if (phase < 2.5) return baseline + (phase - 2) * height * 0.15
+  if (phase < 3) return baseline + (3 - phase) * height * 0.15
+  return baseline
+}
+
 export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isHovered, setIsHovered] = useState(false)
@@ -35,16 +44,17 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     const baseline = height / 2
 
     let offset = 0
+    const pulseWidth = width * 0.25
 
     const draw = () => {
       if (!ctx) return
 
       ctx.clearRect(0, 0, width, height)
 
-      const speed = isHovered ? 2 : 1
+      const speed = isHovered ? 2.5 : 1.2
       offset += speed
 
-      const glowSize = isHovered ? 8 : 5
+      const glowSize = isHovered ? 10 : 6
 
       ctx.beginPath()
       ctx.strokeStyle = '#ff0000'
@@ -54,21 +64,14 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
       ctx.shadowBlur = glowSize
       ctx.shadowColor = '#ff0000'
 
-      const segments = 12
-      const segmentWidth = width / segments
+      const numPoints = 60
+      const step = width / numPoints
 
-      for (let i = 0; i <= segments; i++) {
-        let y = baseline
-        const x = i * segmentWidth - (offset % segmentWidth)
-        
-        const phase = ((i + offset / segmentWidth) % 4)
-        
-        if (phase < 1) y = baseline
-        else if (phase < 1.5) y = baseline - (phase - 1) * height * 0.4
-        else if (phase < 2) y = baseline - (2 - phase) * height * 0.4
-        else if (phase < 2.5) y = baseline + (phase - 2) * height * 0.15
-        else if (phase < 3) y = baseline + (3 - phase) * height * 0.15
-        else y = baseline
+      for (let i = 0; i <= numPoints; i++) {
+        const x = i * step
+        const relativeX = (x + offset) % (pulseWidth * 4)
+        const phase = (relativeX / pulseWidth) * 4
+        const y = getHeartbeatY(phase, height, baseline)
 
         if (i === 0) ctx.moveTo(x, y)
         else ctx.lineTo(x, y)
@@ -81,18 +84,11 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
       ctx.shadowBlur = glowSize * 0.6
       ctx.shadowColor = '#ff0000'
 
-      for (let i = 0; i <= segments; i++) {
-        let y = baseline
-        const x = i * segmentWidth - (offset % segmentWidth)
-        
-        const phase = ((i + offset / segmentWidth) % 4)
-        
-        if (phase < 1) y = baseline
-        else if (phase < 1.5) y = baseline - (phase - 1) * height * 0.4
-        else if (phase < 2) y = baseline - (2 - phase) * height * 0.4
-        else if (phase < 2.5) y = baseline + (phase - 2) * height * 0.15
-        else if (phase < 3) y = baseline + (3 - phase) * height * 0.15
-        else y = baseline
+      for (let i = 0; i <= numPoints; i++) {
+        const x = i * step
+        const relativeX = (x + offset) % (pulseWidth * 4)
+        const phase = (relativeX / pulseWidth) * 4
+        const y = getHeartbeatY(phase, height, baseline)
 
         if (i === 0) ctx.moveTo(x, y)
         else ctx.lineTo(x, y)
@@ -104,18 +100,11 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
       ctx.lineWidth = 0.8
       ctx.shadowBlur = 0
 
-      for (let i = 0; i <= segments; i++) {
-        let y = baseline
-        const x = i * segmentWidth - (offset % segmentWidth)
-        
-        const phase = ((i + offset / segmentWidth) % 4)
-        
-        if (phase < 1) y = baseline
-        else if (phase < 1.5) y = baseline - (phase - 1) * height * 0.4
-        else if (phase < 2) y = baseline - (2 - phase) * height * 0.4
-        else if (phase < 2.5) y = baseline + (phase - 2) * height * 0.15
-        else if (phase < 3) y = baseline + (3 - phase) * height * 0.15
-        else y = baseline
+      for (let i = 0; i <= numPoints; i++) {
+        const x = i * step
+        const relativeX = (x + offset) % (pulseWidth * 4)
+        const phase = (relativeX / pulseWidth) * 4
+        const y = getHeartbeatY(phase, height, baseline)
 
         if (i === 0) ctx.moveTo(x, y)
         else ctx.lineTo(x, y)
