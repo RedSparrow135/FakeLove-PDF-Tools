@@ -61,33 +61,41 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
       const yVal = getY(tCycle)
       const newY = baseline + (yVal * amplitude / 30)
 
-      const glowSize = isHovered ? 15 : 10
-      const lineW = isHovered ? 2.5 : 2
+      const glowSize = isHovered ? 20 : 14
+      const lineW = isHovered ? 4 : 3.5
 
       ctx.beginPath()
-      ctx.strokeStyle = '#dc2626'
+      ctx.strokeStyle = '#ef4444'
       ctx.lineWidth = lineW
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
       ctx.shadowBlur = glowSize
-      ctx.shadowColor = '#f43f5e'
+      ctx.shadowColor = '#dc2626'
       
       ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
       ctx.lineTo(x, newY)
       ctx.stroke()
 
       ctx.beginPath()
-      ctx.strokeStyle = 'rgba(220, 38, 38, 0.5)'
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)'
       ctx.lineWidth = lineW + 4
-      ctx.shadowBlur = glowSize * 2
+      ctx.shadowBlur = glowSize * 1.5
       ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
       ctx.lineTo(x, newY)
       ctx.stroke()
 
       ctx.beginPath()
-      ctx.strokeStyle = 'rgba(244, 63, 94, 0.3)'
+      ctx.strokeStyle = 'rgba(248, 113, 113, 0.4)'
       ctx.lineWidth = lineW + 10
-      ctx.shadowBlur = glowSize * 3
+      ctx.shadowBlur = glowSize * 2.5
+      ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
+      ctx.lineTo(x, newY)
+      ctx.stroke()
+
+      ctx.beginPath()
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+      ctx.lineWidth = 1.5
+      ctx.shadowBlur = 0
       ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
       ctx.lineTo(x, newY)
       ctx.stroke()

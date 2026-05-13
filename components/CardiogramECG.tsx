@@ -81,33 +81,41 @@ export default function CardiogramECG({
     const yVal = getY(tCycle)
     const newY = baseline + (yVal * amplitude / 30)
 
-    const glowSize = isHovered ? 20 : 14
-    const lineW = isHovered ? 3.5 : 3
+    const glowSize = isHovered ? 25 : 18
+    const lineW = isHovered ? 4.5 : 4
 
     ctx.beginPath()
-    ctx.strokeStyle = lineColor
+    ctx.strokeStyle = '#ef4444'
     ctx.lineWidth = lineW
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
     ctx.shadowBlur = glowSize
-    ctx.shadowColor = glowColor
+    ctx.shadowColor = '#dc2626'
     
     ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
     ctx.beginPath()
-    ctx.strokeStyle = `rgba(220, 38, 38, 0.6)`
-    ctx.lineWidth = lineW + 3
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.7)'
+    ctx.lineWidth = lineW + 4
     ctx.shadowBlur = glowSize * 1.5
     ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
     ctx.beginPath()
-    ctx.strokeStyle = `rgba(244, 63, 94, 0.4)`
-    ctx.lineWidth = lineW + 8
+    ctx.strokeStyle = 'rgba(248, 113, 113, 0.5)'
+    ctx.lineWidth = lineW + 12
     ctx.shadowBlur = glowSize * 2.5
+    ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
+    ctx.lineTo(x, newY)
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
+    ctx.lineWidth = 1.5
+    ctx.shadowBlur = 0
     ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
