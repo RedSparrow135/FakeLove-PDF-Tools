@@ -140,7 +140,7 @@ export default function DashboardPage() {
       {/* Sidebar */}
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          <AnimatedLogo size="small" animated={false} />
+          <AnimatedLogo size="small" />
         </div>
 
         <nav className={styles.nav}>

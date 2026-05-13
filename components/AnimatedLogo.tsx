@@ -1,27 +1,119 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import styles from './AnimatedLogo.module.scss'
 
 interface AnimatedLogoProps {
   size?: 'small' | 'medium' | 'large'
-  animated?: boolean
 }
 
-export default function AnimatedLogo({ size = 'medium', animated = true }: AnimatedLogoProps) {
+export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isHovered, setIsHovered] = useState(false)
 
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const dpr = window.devicePixelRatio || 1
+    const rect = canvas.getBoundingClientRect()
+    
+    if (canvas.width !== rect.width * dpr || canvas.height !== rect.height * dpr) {
+      canvas.width = rect.width * dpr
+      canvas.height = rect.height * dpr
+      ctx.scale(dpr, dpr)
+    }
+
+    const width = rect.width
+    const height = rect.height
+    const baseline = height / 2
+    const amplitude = height * 0.35
+
+    const template = [
+      [0, 0], [8, 0], [12, -2], [16, 0], [18, 0],
+      [20, 0], [22, 4], [26, -25], [30, 6],
+      [34, 0], [38, 0], [42, 0], [46, -3], [52, 0], [60, 0], [100, 0]
+    ]
+
+    function interpolate(t: number): number {
+      for (let i = 0; i < template.length - 1; i++) {
+        const [t1, y1] = template[i]
+        const [t2, y2] = template[i + 1]
+        if (t >= t1 && t <= t2) {
+          const progress = (t - t1) / (t2 - t1)
+          return y1 + (y2 - y1) * progress
+        }
+      }
+      return 0
+    }
+
+    let x = 0
+    let time = 0
+    let prevY = baseline
+
+    function draw() {
+      if (!ctx) return
+      
+      const speed = isHovered ? 4 : 2.5
+
+      ctx.clearRect(0, 0, width, height)
+
+      const cycleLength = 100
+      const tCycle = (time % cycleLength) / cycleLength * 100
+      const yVal = interpolate(tCycle)
+      const newY = baseline + (yVal * amplitude / 30)
+
+      const glowAmount = isHovered ? 12 : 8
+      const lineWidth = isHovered ? 2.5 : 2
+
+      ctx.beginPath()
+      ctx.strokeStyle = '#ff2e63'
+      ctx.lineWidth = lineWidth
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      ctx.shadowBlur = glowAmount
+      ctx.shadowColor = '#ff2e63'
+      
+      ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
+      ctx.lineTo(x, newY)
+      ctx.stroke()
+
+      ctx.beginPath()
+      ctx.strokeStyle = 'rgba(255, 46, 99, 0.4)'
+      ctx.lineWidth = lineWidth + 2
+      ctx.shadowBlur = glowAmount * 2
+      ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
+      ctx.lineTo(x, newY)
+      ctx.stroke()
+
+      ctx.clearRect(x + speed + 1, 0, 30, height)
+
+      prevY = newY
+      x += speed
+      time += 1
+
+      if (x > width) {
+        x = 0
+        ctx.clearRect(0, 0, 5, height)
+      }
+
+      requestAnimationFrame(draw)
+    }
+
+    const animationId = requestAnimationFrame(draw)
+    return () => cancelAnimationFrame(animationId)
+  }, [isHovered])
+
   const sizes = {
-    small: { height: '16px', fontSize: '0.75rem', fontSizeSub: '0.45rem' },
-    medium: { height: '22px', fontSize: '1rem', fontSizeSub: '0.55rem' },
-    large: { height: '32px', fontSize: '1.4rem', fontSizeSub: '0.65rem' },
+    small: { titleSize: '1rem', subtitleSize: '0.45rem', canvasHeight: '14px' },
+    medium: { titleSize: '1.3rem', subtitleSize: '0.5rem', canvasHeight: '18px' },
+    large: { titleSize: '1.8rem', subtitleSize: '0.6rem', canvasHeight: '24px' },
   }
 
-  const { height, fontSize, fontSizeSub } = sizes[size]
-
-  const cardioPaths = [
-    'M0,50 L40,50 L48,50 L52,20 L56,80 L60,30 L64,45 L68,50 L120,50 L128,50 L132,20 L136,80 L140,30 L144,45 L148,50 L200,50 L208,50 L212,20 L216,80 L220,30 L224,45 L228,50 L280,50 L288,50 L292,20 L296,80 L300,30 L304,45 L308,50 L360,50 L368,50 L372,20 L376,80 L380,30 L384,45 L388,50',
-  ].join(' ')
+  const { titleSize, subtitleSize, canvasHeight } = sizes[size]
 
   return (
     <div 
@@ -29,52 +121,18 @@ export default function AnimatedLogo({ size = 'medium', animated = true }: Anima
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={styles.textWrapper}>
-        <span className={styles.fake} style={{ fontSize }}>Fake</span>
-        <span className={styles.love} style={{ fontSize }}>Love</span>
+      <div className={styles.textRow}>
+        <h1 className={styles.title}>
+          <span className={styles.fake} style={{ fontSize: titleSize }}>Fake</span>
+          <span className={styles.love} style={{ fontSize: titleSize }}>Love</span>
+        </h1>
       </div>
       
-      <div className={styles.cardiogramWrapper} style={{ height }}>
-        <svg 
-          className={styles.cardiogramSvg}
-          viewBox="0 0 400 100" 
-          preserveAspectRatio="none"
-          style={{ height }}
-        >
-          <defs>
-            <linearGradient id="cardioGradLogo" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#ff2e63" stopOpacity="0" />
-              <stop offset="20%" stopColor="#ff2e63" stopOpacity="0.6" />
-              <stop offset="50%" stopColor="#ff0040" stopOpacity="1" />
-              <stop offset="80%" stopColor="#ff2e63" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#ff2e63" stopOpacity="0" />
-            </linearGradient>
-            <filter id="cardioGlowLogo" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
-              <feMerge>
-                <feMergeNode in="blur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-          
-          <path
-            className={styles.cardioPath}
-            d={cardioPaths}
-            fill="none"
-            stroke="url(#cardioGradLogo)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            filter="url(#cardioGlowLogo)"
-            style={{
-              animationDuration: isHovered ? '1.5s' : '2.5s',
-            }}
-          />
-        </svg>
+      <div className={styles.ecgRow} style={{ height: canvasHeight }}>
+        <canvas ref={canvasRef} className={styles.canvas} />
       </div>
-
-      <span className={styles.subtitle} style={{ fontSize: fontSizeSub }}>
+      
+      <span className={styles.subtitle} style={{ fontSize: subtitleSize }}>
         PDF TOOLS
       </span>
     </div>
