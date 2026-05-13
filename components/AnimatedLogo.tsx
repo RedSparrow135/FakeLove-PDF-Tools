@@ -11,19 +11,26 @@ function gaussian(x: number, mean: number, sigma: number): number {
   return Math.exp(-Math.pow(x - mean, 2) / (2 * sigma * sigma))
 }
 
-function cardiogramY(x: number): number {
+function cardiogramY(x: number, spike: number = 0): number {
   const p = 0.6 * Math.sin(x) * gaussian(x, 3, 0.3)
   const q = -1.5 * gaussian(x, 3.2, 0.15)
   const r = 2 * gaussian(x, 3.3, 0.08)
   const s = -1 * gaussian(x, 3.4, 0.15)
   const t = 0.5 * gaussian(x, 4, 0.3)
-  return -(p + q + r + s + t)
+  const spikeEffect = spike * 3 * gaussian(x, 3.3, 0.05)
+  return -(p + q + r + s + t + spikeEffect)
 }
 
 export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isHovered, setIsHovered] = useState(false)
+  const [spike, setSpike] = useState(0)
   const animationRef = useRef<number | null>(null)
+
+  const handleClick = () => {
+    setSpike(1)
+    setTimeout(() => setSpike(0), 150)
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -52,7 +59,7 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     const width = rect.width
     const height = rect.height
     const baseline = height / 2
-    const amplitude = height * 0.4
+    const amplitude = height * 0.38
 
     const cycleLength = 100
     let phase = 0
@@ -60,7 +67,7 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     const draw = () => {
       if (!ctx) return
 
-      const effectiveSpeed = isHovered ? 4 : 2.5
+      const effectiveSpeed = isHovered ? 3.5 : 2
 
       ctx.clearRect(0, 0, width, height)
 
@@ -69,17 +76,17 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
 
       for (let i = 0; i < samples; i++) {
         const t = ((phase + i) % cycleLength) / cycleLength * Math.PI * 6
-        const yVal = cardiogramY(t)
+        const yVal = cardiogramY(t, spike)
         const xPos = (i / samples) * width
         const yPos = baseline - yVal * amplitude
         points.push([xPos, yPos])
       }
 
-      const glowSize = isHovered ? 18 : 12
+      const glowSize = isHovered ? 8 : 5
 
       ctx.beginPath()
       ctx.strokeStyle = '#ff0000'
-      ctx.lineWidth = 5
+      ctx.lineWidth = 2.5
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
       ctx.shadowBlur = glowSize
@@ -92,19 +99,8 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
 
       ctx.beginPath()
       ctx.strokeStyle = '#ff3333'
-      ctx.lineWidth = 4
-      ctx.shadowBlur = glowSize * 0.7
-      ctx.shadowColor = '#ff0000'
-      ctx.moveTo(points[0][0], points[0][1])
-      for (let j = 1; j < points.length; j++) {
-        ctx.lineTo(points[j][0], points[j][1])
-      }
-      ctx.stroke()
-
-      ctx.beginPath()
-      ctx.strokeStyle = '#ff6666'
-      ctx.lineWidth = 3
-      ctx.shadowBlur = glowSize * 0.4
+      ctx.lineWidth = 1.8
+      ctx.shadowBlur = glowSize * 0.6
       ctx.shadowColor = '#ff0000'
       ctx.moveTo(points[0][0], points[0][1])
       for (let j = 1; j < points.length; j++) {
@@ -114,7 +110,7 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
 
       ctx.beginPath()
       ctx.strokeStyle = '#ffffff'
-      ctx.lineWidth = 1.5
+      ctx.lineWidth = 0.8
       ctx.shadowBlur = 0
       ctx.moveTo(points[0][0], points[0][1])
       for (let j = 1; j < points.length; j++) {
@@ -138,12 +134,12 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [isHovered])
+  }, [isHovered, spike])
 
   const sizes = {
-    small: { titleSize: '1rem', subtitleSize: '0.45rem', canvasHeight: '14px' },
-    medium: { titleSize: '1.2rem', subtitleSize: '0.5rem', canvasHeight: '16px' },
-    large: { titleSize: '1.6rem', subtitleSize: '0.6rem', canvasHeight: '20px' },
+    small: { titleSize: '1rem', subtitleSize: '0.45rem', canvasHeight: '12px' },
+    medium: { titleSize: '1.2rem', subtitleSize: '0.5rem', canvasHeight: '14px' },
+    large: { titleSize: '1.6rem', subtitleSize: '0.6rem', canvasHeight: '18px' },
   }
 
   const { titleSize, subtitleSize, canvasHeight } = sizes[size]
@@ -153,6 +149,7 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
       className={`${styles.logo} ${isHovered ? styles.hovered : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
     >
       <div className={styles.textRow}>
         <span className={styles.fake} style={{ fontSize: titleSize }}>Fake</span>
