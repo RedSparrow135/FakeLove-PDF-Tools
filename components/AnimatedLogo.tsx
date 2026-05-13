@@ -7,22 +7,10 @@ interface AnimatedLogoProps {
   size?: 'small' | 'medium' | 'large'
 }
 
-function gaussian(x: number, mean: number, sigma: number): number {
-  return Math.exp(-Math.pow(x - mean, 2) / (2 * sigma * sigma))
-}
-
-function cardiogramY(x: number): number {
-  const p = 0.6 * Math.sin(x) * gaussian(x, 3, 0.3)
-  const q = -1.5 * gaussian(x, 3.2, 0.15)
-  const r = 2 * gaussian(x, 3.3, 0.08)
-  const s = -1 * gaussian(x, 3.4, 0.15)
-  const t = 0.5 * gaussian(x, 4, 0.3)
-  return -(p + q + r + s + t)
-}
-
 export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isHovered, setIsHovered] = useState(false)
+  const animationRef = useRef<number | null>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -45,57 +33,105 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     const width = rect.width
     const height = rect.height
     const baseline = height / 2
-    const amplitude = height * 0.38
 
-    ctx.clearRect(0, 0, width, height)
+    let offset = 0
 
-    const points: [number, number][] = []
-    const samples = 100
+    const draw = () => {
+      if (!ctx) return
 
-    for (let i = 0; i < samples; i++) {
-      const t = (i / samples) * Math.PI * 6
-      const yVal = cardiogramY(t)
-      const xPos = (i / samples) * width
-      const yPos = baseline - yVal * amplitude
-      points.push([xPos, yPos])
+      ctx.clearRect(0, 0, width, height)
+
+      const speed = isHovered ? 2 : 1
+      offset += speed
+
+      const glowSize = isHovered ? 8 : 5
+
+      ctx.beginPath()
+      ctx.strokeStyle = '#ff0000'
+      ctx.lineWidth = 2.5
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      ctx.shadowBlur = glowSize
+      ctx.shadowColor = '#ff0000'
+
+      const segments = 12
+      const segmentWidth = width / segments
+
+      for (let i = 0; i <= segments; i++) {
+        let y = baseline
+        const x = i * segmentWidth - (offset % segmentWidth)
+        
+        const phase = ((i + offset / segmentWidth) % 4)
+        
+        if (phase < 1) y = baseline
+        else if (phase < 1.5) y = baseline - (phase - 1) * height * 0.4
+        else if (phase < 2) y = baseline - (2 - phase) * height * 0.4
+        else if (phase < 2.5) y = baseline + (phase - 2) * height * 0.15
+        else if (phase < 3) y = baseline + (3 - phase) * height * 0.15
+        else y = baseline
+
+        if (i === 0) ctx.moveTo(x, y)
+        else ctx.lineTo(x, y)
+      }
+      ctx.stroke()
+
+      ctx.beginPath()
+      ctx.strokeStyle = '#ff3333'
+      ctx.lineWidth = 1.8
+      ctx.shadowBlur = glowSize * 0.6
+      ctx.shadowColor = '#ff0000'
+
+      for (let i = 0; i <= segments; i++) {
+        let y = baseline
+        const x = i * segmentWidth - (offset % segmentWidth)
+        
+        const phase = ((i + offset / segmentWidth) % 4)
+        
+        if (phase < 1) y = baseline
+        else if (phase < 1.5) y = baseline - (phase - 1) * height * 0.4
+        else if (phase < 2) y = baseline - (2 - phase) * height * 0.4
+        else if (phase < 2.5) y = baseline + (phase - 2) * height * 0.15
+        else if (phase < 3) y = baseline + (3 - phase) * height * 0.15
+        else y = baseline
+
+        if (i === 0) ctx.moveTo(x, y)
+        else ctx.lineTo(x, y)
+      }
+      ctx.stroke()
+
+      ctx.beginPath()
+      ctx.strokeStyle = '#ffffff'
+      ctx.lineWidth = 0.8
+      ctx.shadowBlur = 0
+
+      for (let i = 0; i <= segments; i++) {
+        let y = baseline
+        const x = i * segmentWidth - (offset % segmentWidth)
+        
+        const phase = ((i + offset / segmentWidth) % 4)
+        
+        if (phase < 1) y = baseline
+        else if (phase < 1.5) y = baseline - (phase - 1) * height * 0.4
+        else if (phase < 2) y = baseline - (2 - phase) * height * 0.4
+        else if (phase < 2.5) y = baseline + (phase - 2) * height * 0.15
+        else if (phase < 3) y = baseline + (3 - phase) * height * 0.15
+        else y = baseline
+
+        if (i === 0) ctx.moveTo(x, y)
+        else ctx.lineTo(x, y)
+      }
+      ctx.stroke()
+
+      animationRef.current = requestAnimationFrame(draw)
     }
 
-    const glowSize = isHovered ? 8 : 5
+    animationRef.current = requestAnimationFrame(draw)
 
-    ctx.beginPath()
-    ctx.strokeStyle = '#ff0000'
-    ctx.lineWidth = 2.5
-    ctx.lineCap = 'round'
-    ctx.lineJoin = 'round'
-    ctx.shadowBlur = glowSize
-    ctx.shadowColor = '#ff0000'
-    ctx.moveTo(points[0][0], points[0][1])
-    for (let j = 1; j < points.length; j++) {
-      ctx.lineTo(points[j][0], points[j][1])
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
     }
-    ctx.stroke()
-
-    ctx.beginPath()
-    ctx.strokeStyle = '#ff3333'
-    ctx.lineWidth = 1.8
-    ctx.shadowBlur = glowSize * 0.6
-    ctx.shadowColor = '#ff0000'
-    ctx.moveTo(points[0][0], points[0][1])
-    for (let j = 1; j < points.length; j++) {
-      ctx.lineTo(points[j][0], points[j][1])
-    }
-    ctx.stroke()
-
-    ctx.beginPath()
-    ctx.strokeStyle = '#ffffff'
-    ctx.lineWidth = 0.8
-    ctx.shadowBlur = 0
-    ctx.moveTo(points[0][0], points[0][1])
-    for (let j = 1; j < points.length; j++) {
-      ctx.lineTo(points[j][0], points[j][1])
-    }
-    ctx.stroke()
-
   }, [isHovered])
 
   const sizes = {
