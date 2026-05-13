@@ -59,6 +59,9 @@
   width: 100%;
   position: relative;
   overflow: hidden;
+  border-radius: 4px;
+  background: #050505;
+  border: 1px solid rgba(255, 0, 0, 0.2);
 }
 
 .canvas {

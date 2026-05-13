@@ -23,7 +23,7 @@ function cardiogramY(x: number): number {
 export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isHovered, setIsHovered] = useState(false)
-  const [isReady, setIsReady] = useState(false)
+  const animationRef = useRef<number | null>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -32,35 +32,22 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const initCanvas = () => {
+    const setupCanvas = () => {
       const dpr = window.devicePixelRatio || 1
       const rect = canvas.getBoundingClientRect()
       
       if (rect.width === 0 || rect.height === 0) {
-        setTimeout(initCanvas, 50)
+        setTimeout(setupCanvas, 50)
         return
       }
 
       canvas.width = rect.width * dpr
       canvas.height = rect.height * dpr
       ctx.scale(dpr, dpr)
-
-      setIsReady(true)
     }
 
-    initCanvas()
-  }, [])
+    setupCanvas()
 
-  useEffect(() => {
-    if (!isReady) return
-
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const dpr = window.devicePixelRatio || 1
     const rect = canvas.getBoundingClientRect()
     const width = rect.width
     const height = rect.height
@@ -70,15 +57,15 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     const cycleLength = 100
     let phase = 0
 
-    function draw() {
+    const draw = () => {
       if (!ctx) return
 
-      const effectiveSpeed = isHovered ? 2.5 : 1.5
+      const effectiveSpeed = isHovered ? 4 : 2.5
 
       ctx.clearRect(0, 0, width, height)
 
       const points: [number, number][] = []
-      const samples = 80
+      const samples = 100
 
       for (let i = 0; i < samples; i++) {
         const t = ((phase + i) % cycleLength) / cycleLength * Math.PI * 6
@@ -88,11 +75,11 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
         points.push([xPos, yPos])
       }
 
-      const glowSize = isHovered ? 20 : 15
+      const glowSize = isHovered ? 18 : 12
 
       ctx.beginPath()
       ctx.strokeStyle = '#ff0000'
-      ctx.lineWidth = 4
+      ctx.lineWidth = 5
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
       ctx.shadowBlur = glowSize
@@ -105,8 +92,8 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
 
       ctx.beginPath()
       ctx.strokeStyle = '#ff3333'
-      ctx.lineWidth = 3
-      ctx.shadowBlur = glowSize * 0.6
+      ctx.lineWidth = 4
+      ctx.shadowBlur = glowSize * 0.7
       ctx.shadowColor = '#ff0000'
       ctx.moveTo(points[0][0], points[0][1])
       for (let j = 1; j < points.length; j++) {
@@ -116,8 +103,8 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
 
       ctx.beginPath()
       ctx.strokeStyle = '#ff6666'
-      ctx.lineWidth = 2
-      ctx.shadowBlur = glowSize * 0.3
+      ctx.lineWidth = 3
+      ctx.shadowBlur = glowSize * 0.4
       ctx.shadowColor = '#ff0000'
       ctx.moveTo(points[0][0], points[0][1])
       for (let j = 1; j < points.length; j++) {
@@ -127,7 +114,7 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
 
       ctx.beginPath()
       ctx.strokeStyle = '#ffffff'
-      ctx.lineWidth = 1
+      ctx.lineWidth = 1.5
       ctx.shadowBlur = 0
       ctx.moveTo(points[0][0], points[0][1])
       for (let j = 1; j < points.length; j++) {
@@ -140,14 +127,18 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
         phase = 0
       }
 
-      requestAnimationFrame(draw)
+      animationRef.current = requestAnimationFrame(draw)
     }
 
     ctx.clearRect(0, 0, width, height)
+    animationRef.current = requestAnimationFrame(draw)
 
-    const animationId = requestAnimationFrame(draw)
-    return () => cancelAnimationFrame(animationId)
-  }, [isHovered, isReady])
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [isHovered])
 
   const sizes = {
     small: { titleSize: '1rem', subtitleSize: '0.45rem', canvasHeight: '14px' },

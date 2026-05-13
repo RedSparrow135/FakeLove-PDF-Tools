@@ -25,7 +25,7 @@ function cardiogramY(x: number): number {
 
 export default function CardiogramECG({ 
   className = '', 
-  speed = 3,
+  speed = 5,
   showBpmBoost = false,
   progress = 0
 }: CardiogramECGProps) {
