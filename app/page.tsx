@@ -58,7 +58,13 @@ const operations = {
 }
 
 export default function DashboardPage() {
-  const [showSplash, setShowSplash] = useState(true)
+  const [showSplash, setShowSplash] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const hasSeenSplash = sessionStorage.getItem('fakelove-splash-shown')
+      return !hasSeenSplash
+    }
+    return true
+  })
   const [activeCategory, setActiveCategory] = useState<Category>('dashboard')
   const [searchQuery, setSearchQuery] = useState('')
   const [showLangMenu, setShowLangMenu] = useState(false)
@@ -583,7 +589,10 @@ export default function DashboardPage() {
       <FileUploader />
 
       {/* Splash Screen */}
-      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} minDuration={3500} />}
+      {showSplash && <SplashScreen onComplete={() => {
+        sessionStorage.setItem('fakelove-splash-shown', 'true')
+        setShowSplash(false)
+      }} minDuration={3500} />}
     </div>
   )
 }
