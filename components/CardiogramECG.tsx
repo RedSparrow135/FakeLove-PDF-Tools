@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
 import styles from './CardiogramECG.module.scss'
 
 interface CardiogramECGProps {
@@ -12,23 +12,13 @@ interface CardiogramECGProps {
 
 export default function CardiogramECG({ 
   className = '', 
-  speed = 4,
+  speed = 3,
   showBpmBoost = false,
   progress = 0
 }: CardiogramECGProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [currentPattern, setCurrentPattern] = useState(0)
-  const [isHovered, setIsHovered] = useState(false)
 
-  const getBpm = (): number => {
-    if (showBpmBoost && progress > 80) {
-      const boost = Math.floor((progress - 80) * 3)
-      return 76 + boost
-    }
-    return 76
-  }
-
-  const draw = useCallback(() => {
+  useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -47,115 +37,122 @@ export default function CardiogramECG({
     const width = rect.width
     const height = rect.height
     const baseline = height / 2
-    const amplitude = height * 0.38
+    const amplitude = height * 0.4
 
-    const currentBpm = getBpm()
-    const cycleLength = currentBpm > 100 ? 65 : currentBpm < 60 ? 140 : 100
-
-    if (!canvas.dataset.lastX) {
-      canvas.dataset.lastX = '0'
-      canvas.dataset.time = '0'
-      canvas.dataset.prevY = baseline.toString()
-      canvas.dataset.prevX = '0'
+    const getBpm = (): number => {
+      if (showBpmBoost && progress > 80) {
+        return 76 + Math.floor((progress - 80) * 3)
+      }
+      return 76
     }
 
-    let x = parseFloat(canvas.dataset.lastX || '0')
-    let prevX = parseFloat(canvas.dataset.prevX || '0')
-    let time = parseFloat(canvas.dataset.time || '0')
-    let prevY = parseFloat(canvas.dataset.prevY || baseline.toString())
-
-    const tCycle = (time % cycleLength) / cycleLength * 100
+    const cycleLength = (): number => {
+      const bpm = getBpm()
+      return Math.round(60000 / bpm / 16.67)
+    }
 
     const getY = (t: number): number => {
-      if (t < 8) return 0
-      if (t < 12) return -2
-      if (t < 16) return 0
+      if (t < 5) return 0
+      if (t < 10) return -1
+      if (t < 15) return 0
       if (t < 20) return 0
-      if (t < 22) return 3
-      if (t < 26) return -28
-      if (t < 30) return 6
-      if (t < 38) return 0
-      if (t < 46) return -3
-      if (t < 54) return 0
+      if (t < 25) return 2
+      if (t < 30) return -30
+      if (t < 35) return 8
+      if (t < 45) return 0
+      if (t < 55) return -4
+      if (t < 65) return 0
       return 0
     }
 
-    const yVal = getY(tCycle)
-    const newY = baseline + (yVal * amplitude / 30)
+    let x = 0
+    let time = 0
+    let lastCycleLength = cycleLength()
 
-    const effectiveSpeed = isHovered ? speed * 1.8 : speed
+    const draw = () => {
+      const bpm = getBpm()
+      const currentCycleLength = cycleLength()
 
-    ctx.beginPath()
-    ctx.strokeStyle = '#ff0000'
-    ctx.lineWidth = 5
-    ctx.lineCap = 'round'
-    ctx.lineJoin = 'round'
-    ctx.shadowBlur = 25
-    ctx.shadowColor = '#ff0000'
-    
-    ctx.moveTo(prevX, prevY)
-    ctx.lineTo(x, newY)
-    ctx.stroke()
+      if (currentCycleLength !== lastCycleLength) {
+        lastCycleLength = currentCycleLength
+      }
 
-    ctx.beginPath()
-    ctx.strokeStyle = '#ff3333'
-    ctx.lineWidth = 4
-    ctx.shadowBlur = 20
-    ctx.shadowColor = '#ff0000'
-    ctx.moveTo(prevX, prevY)
-    ctx.lineTo(x, newY)
-    ctx.stroke()
+      const tCycle = (time % currentCycleLength) / currentCycleLength * 100
+      const yVal = getY(tCycle)
+      const newY = baseline + (yVal * amplitude / 30)
 
-    ctx.beginPath()
-    ctx.strokeStyle = '#ff6666'
-    ctx.lineWidth = 3
-    ctx.shadowBlur = 15
-    ctx.shadowColor = '#ff0000'
-    ctx.moveTo(prevX, prevY)
-    ctx.lineTo(x, newY)
-    ctx.stroke()
+      ctx.beginPath()
+      ctx.strokeStyle = '#ff0000'
+      ctx.lineWidth = 5
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      ctx.shadowBlur = 28
+      ctx.shadowColor = '#ff0000'
+      ctx.moveTo(x, baseline)
+      ctx.lineTo(x + speed, newY)
+      ctx.stroke()
 
-    ctx.beginPath()
-    ctx.strokeStyle = '#ffffff'
-    ctx.lineWidth = 1.5
-    ctx.shadowBlur = 0
-    ctx.moveTo(prevX, prevY)
-    ctx.lineTo(x, newY)
-    ctx.stroke()
+      ctx.beginPath()
+      ctx.strokeStyle = '#ff3333'
+      ctx.lineWidth = 4
+      ctx.shadowBlur = 22
+      ctx.shadowColor = '#ff0000'
+      ctx.moveTo(x, baseline)
+      ctx.lineTo(x + speed, newY)
+      ctx.stroke()
 
-    ctx.fillStyle = '#050505'
-    ctx.fillRect(x + effectiveSpeed, 0, 100, height)
+      ctx.beginPath()
+      ctx.strokeStyle = '#ff6666'
+      ctx.lineWidth = 3
+      ctx.shadowBlur = 16
+      ctx.shadowColor = '#ff0000'
+      ctx.moveTo(x, baseline)
+      ctx.lineTo(x + speed, newY)
+      ctx.stroke()
 
-    canvas.dataset.prevX = x.toString()
-    canvas.dataset.lastX = (x + effectiveSpeed).toString()
-    canvas.dataset.time = (time + 1).toString()
-    canvas.dataset.prevY = newY.toString()
+      ctx.beginPath()
+      ctx.strokeStyle = '#ffffff'
+      ctx.lineWidth = 2
+      ctx.shadowBlur = 0
+      ctx.moveTo(x, baseline)
+      ctx.lineTo(x + speed, newY)
+      ctx.stroke()
 
-    if (x > width) {
-      x = 0
-      prevX = 0
-      canvas.dataset.lastX = '0'
-      canvas.dataset.prevX = '0'
-      ctx.clearRect(0, 0, 5, height)
+      x += speed
+      time += speed
+
+      if (x > width) {
+        ctx.clearRect(0, 0, 10, height)
+      }
+
+      if (x >= width - 20) {
+        ctx.fillStyle = '#050505'
+        ctx.fillRect(width - 15, 0, 20, height)
+        x = width - 20
+      }
+
+      requestAnimationFrame(draw)
     }
 
-    requestAnimationFrame(draw)
-  }, [speed, isHovered, getBpm])
+    ctx.fillStyle = '#050505'
+    ctx.fillRect(0, 0, width, height)
 
-  useEffect(() => {
     const animationId = requestAnimationFrame(draw)
     return () => cancelAnimationFrame(animationId)
-  }, [draw])
+  }, [speed, showBpmBoost, progress])
+
+  const getBpm = (): number => {
+    if (showBpmBoost && progress > 80) {
+      return 76 + Math.floor((progress - 80) * 3)
+    }
+    return 76
+  }
 
   const currentBpm = getBpm()
   const rhythmName = currentBpm > 100 ? 'TACHY' : currentBpm < 60 ? 'BRADY' : 'SINUS'
 
   return (
-    <div 
-      className={`${styles.container} ${className}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className={`${styles.container} ${className}`}>
       <div className={styles.header}>
         <div className={styles.titleRow}>
           <span className={styles.fake}>Fake</span>

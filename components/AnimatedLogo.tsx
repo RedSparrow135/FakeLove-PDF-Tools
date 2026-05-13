@@ -32,32 +32,30 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     const baseline = height / 2
     const amplitude = height * 0.4
 
-    let x = 0
-    let time = 0
-    let prevY = baseline
-
-    function getY(t: number): number {
-      if (t < 8) return 0
-      if (t < 12) return -2
-      if (t < 16) return 0
+    const getY = (t: number): number => {
+      if (t < 5) return 0
+      if (t < 10) return -1
+      if (t < 15) return 0
       if (t < 20) return 0
-      if (t < 22) return 3
-      if (t < 26) return -28
-      if (t < 30) return 6
-      if (t < 38) return 0
-      if (t < 46) return -3
-      if (t < 54) return 0
+      if (t < 25) return 2
+      if (t < 30) return -30
+      if (t < 35) return 8
+      if (t < 45) return 0
+      if (t < 55) return -4
+      if (t < 65) return 0
       return 0
     }
+
+    let x = 0
+    let time = 0
+    const cycleLength = 100
 
     function draw() {
       if (!ctx) return
 
-      const speed = isHovered ? 4 : 3
+      const speed = isHovered ? 3 : 2
 
-      ctx.clearRect(0, 0, width, height)
-
-      const tCycle = (time % 100) / 100 * 100
+      const tCycle = (time % cycleLength) / cycleLength * 100
       const yVal = getY(tCycle)
       const newY = baseline + (yVal * amplitude / 30)
 
@@ -70,9 +68,8 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
       ctx.lineJoin = 'round'
       ctx.shadowBlur = glowSize
       ctx.shadowColor = '#ff0000'
-      
-      ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
-      ctx.lineTo(x, newY)
+      ctx.moveTo(x === 0 ? 0 : x - speed, baseline)
+      ctx.lineTo(x + speed, newY)
       ctx.stroke()
 
       ctx.beginPath()
@@ -80,8 +77,8 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
       ctx.lineWidth = 3.5
       ctx.shadowBlur = glowSize * 0.7
       ctx.shadowColor = '#ff0000'
-      ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
-      ctx.lineTo(x, newY)
+      ctx.moveTo(x === 0 ? 0 : x - speed, baseline)
+      ctx.lineTo(x + speed, newY)
       ctx.stroke()
 
       ctx.beginPath()
@@ -89,31 +86,36 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
       ctx.lineWidth = 2.5
       ctx.shadowBlur = glowSize * 0.4
       ctx.shadowColor = '#ff0000'
-      ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
-      ctx.lineTo(x, newY)
+      ctx.moveTo(x === 0 ? 0 : x - speed, baseline)
+      ctx.lineTo(x + speed, newY)
       ctx.stroke()
 
       ctx.beginPath()
       ctx.strokeStyle = '#ffffff'
       ctx.lineWidth = 1.5
       ctx.shadowBlur = 0
-      ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
-      ctx.lineTo(x, newY)
+      ctx.moveTo(x === 0 ? 0 : x - speed, baseline)
+      ctx.lineTo(x + speed, newY)
       ctx.stroke()
 
-      ctx.clearRect(x + speed + 2, 0, 50, height)
-
-      prevY = newY
       x += speed
-      time += 1
+      time += speed
 
       if (x > width) {
-        x = 0
         ctx.clearRect(0, 0, 10, height)
+        x = 0
+      }
+
+      if (x >= width - 10) {
+        ctx.clearRect(width - 15, 0, 20, height)
+        x = width - 15
       }
 
       requestAnimationFrame(draw)
     }
+
+    ctx.fillStyle = 'transparent'
+    ctx.clearRect(0, 0, width, height)
 
     const animationId = requestAnimationFrame(draw)
     return () => cancelAnimationFrame(animationId)
