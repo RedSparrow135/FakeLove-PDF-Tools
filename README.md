@@ -8,6 +8,23 @@ A parody PDF tool with personality, removing limits and adding drama to your fil
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
 ![SCSS](https://img.shields.io/badge/SCSS-Enabled-pink)
 ![License](https://img.shields.io/badge/License-MIT-red)
+![Vercel Ready](https://img.shields.io/badge/Vercel-Ready-green)
+![Dark Theme](https://img.shields.io/badge/Theme-Cyberpunk%20Red-purple)
+![Bilingual](https://img.shields.io/badge/i18n-ES%2FEN-orange)
+
+---
+
+## 🎯 What is FakeLove?
+
+FakeLove PDF Tools is a **sarcastic, dark-themed PDF manipulation suite** that treats your files like a toxic relationship:
+
+- 💔 "We pretend to love your PDFs"
+- ⚡ Fast processing with zero UI blocking  
+- 🌐 Full Spanish/English support
+- 🎆 Binary celebration fireworks on completion
+- 👤 Signature developer tag (CHARLES-X)
+
+> *"We are NOT just a tool. We are an experience."*
 
 ---
 
