@@ -11,7 +11,6 @@ interface SplashScreenProps {
 
 export default function SplashScreen({ onComplete, minDuration = 3000 }: SplashScreenProps) {
   const [progress, setProgress] = useState(0)
-  const [phase, setPhase] = useState(0)
   const [showContent, setShowContent] = useState(false)
 
   useEffect(() => {
@@ -23,24 +22,17 @@ export default function SplashScreen({ onComplete, minDuration = 3000 }: SplashS
     let currentProgress = 0
     
     const progressInterval = setInterval(() => {
-      currentProgress += 1.1
+      currentProgress += 1.2
       setProgress(Math.min(currentProgress, 100))
       
       if (currentProgress >= 100) {
         clearInterval(progressInterval)
         setTimeout(onComplete, 400)
       }
-    }, minDuration / 90)
+    }, minDuration / 85)
 
     return () => clearInterval(progressInterval)
   }, [minDuration, onComplete])
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPhase(p => (p + 1) % 360)
-    }, 25)
-    return () => clearInterval(interval)
-  }, [])
 
   const statusMessages = [
     'INITIALIZING SYSTEM...',
@@ -67,30 +59,14 @@ export default function SplashScreen({ onComplete, minDuration = 3000 }: SplashS
         <div className={styles.horizonGlow} />
         
         <div className={styles.particles}>
-          {Array.from({ length: 40 }).map((_, i) => (
+          {Array.from({ length: 25 }).map((_, i) => (
             <div 
               key={i} 
               className={styles.particle}
               style={{
-                left: `${(i * 2.8) % 100}%`,
-                animationDelay: `${(i * 0.15) % 4}s`,
+                left: `${(i * 4.2) % 100}%`,
+                animationDelay: `${(i * 0.2) % 4}s`,
                 animationDuration: `${3 + (i % 4)}s`,
-                width: i % 3 === 0 ? '3px' : '2px',
-                height: i % 3 === 0 ? '3px' : '2px',
-              }}
-            />
-          ))}
-        </div>
-
-        <div className={styles.dataStreams}>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div 
-              key={i} 
-              className={styles.dataStream}
-              style={{
-                left: `${15 + i * 18}%`,
-                animationDelay: `${i * 0.3}s`,
-                opacity: 0.15 + (i % 3) * 0.05,
               }}
             />
           ))}
@@ -98,7 +74,7 @@ export default function SplashScreen({ onComplete, minDuration = 3000 }: SplashS
       </div>
 
       <div className={`${styles.content} ${showContent ? styles.visible : ''}`}>
-        <CardiogramECG glowIntensity="high" speed={4} />
+        <CardiogramECG speed={4} lineColor="#dc2626" glowColor="#f43f5e" />
 
         <div className={styles.progressSection}>
           <div className={styles.progressTrack}>
@@ -106,27 +82,12 @@ export default function SplashScreen({ onComplete, minDuration = 3000 }: SplashS
               className={styles.progressFill} 
               style={{ width: `${progress}%` }}
             />
-            <div 
-              className={styles.progressGlow}
-              style={{ left: `calc(${progress}% - 8px)` }}
-            />
           </div>
           <span className={styles.progressPercent}>{Math.round(progress)}%</span>
         </div>
 
         <div className={styles.statusSection}>
-          <div className={styles.statusBar}>
-            <span className={styles.statusDot} />
-            <span className={styles.statusText}>{getStatusMessage()}</span>
-          </div>
-        </div>
-
-        <div className={styles.metaSection}>
-          <span className={styles.metaText}>FAKELOVE.SYS</span>
-          <span className={styles.metaDivider}>◆</span>
-          <span className={styles.metaText}>v1.0.0</span>
-          <span className={styles.metaDivider}>◆</span>
-          <span className={styles.metaText}>CARDIAC-MONITOR</span>
+          <span className={styles.statusText}>{getStatusMessage()}</span>
         </div>
       </div>
 
@@ -137,27 +98,12 @@ export default function SplashScreen({ onComplete, minDuration = 3000 }: SplashS
           </svg>
         </span>
         <span className={styles.footerDev}>CHARLE-X</span>
-        <span className={styles.footerCopyright}>2024</span>
       </div>
 
-      <div className={styles.cornerDecorations}>
-        <svg className={styles.cornerSVG} viewBox="0 0 100 100">
-          <path d="M0,30 L0,0 L30,0" fill="none" stroke="#ff2e63" strokeWidth="2"/>
-          <path d="M0,20 L0,0 L20,0" fill="none" stroke="#00ffcc" strokeWidth="1" opacity="0.5"/>
-        </svg>
-        <svg className={styles.cornerSVG} viewBox="0 0 100 100">
-          <path d="M100,30 L100,0 L70,0" fill="none" stroke="#ff2e63" strokeWidth="2"/>
-          <path d="M100,20 L100,0 L80,0" fill="none" stroke="#00ffcc" strokeWidth="1" opacity="0.5"/>
-        </svg>
-        <svg className={styles.cornerSVG} viewBox="0 0 100 100">
-          <path d="M0,70 L0,100 L30,100" fill="none" stroke="#ff2e63" strokeWidth="2"/>
-          <path d="M0,80 L0,100 L20,100" fill="none" stroke="#00ffcc" strokeWidth="1" opacity="0.5"/>
-        </svg>
-        <svg className={styles.cornerSVG} viewBox="0 0 100 100">
-          <path d="M100,70 L100,100 L70,100" fill="none" stroke="#ff2e63" strokeWidth="2"/>
-          <path d="M100,80 L100,100 L80,100" fill="none" stroke="#00ffcc" strokeWidth="1" opacity="0.5"/>
-        </svg>
-      </div>
+      <div className={styles.cornerTL} />
+      <div className={styles.cornerTR} />
+      <div className={styles.cornerBL} />
+      <div className={styles.cornerBR} />
     </div>
   )
 }

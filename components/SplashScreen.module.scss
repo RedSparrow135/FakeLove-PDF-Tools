@@ -6,7 +6,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #020203 0%, #05050a 30%, #08080f 50%, #05050a 70%, #020203 100%);
+  background: linear-gradient(180deg, #0a0a0f 0%, #111119 50%, #0a0a0f 100%);
   overflow: hidden;
 }
 
@@ -20,15 +20,15 @@
   position: absolute;
   inset: 0;
   background-image: 
-    linear-gradient(rgba(255, 46, 99, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 46, 99, 0.035) 1px, transparent 1px);
-  background-size: 80px 80px;
-  animation: gridMove 40s linear infinite;
+    linear-gradient(rgba(220, 38, 38, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(220, 38, 38, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridMove 30s linear infinite;
 }
 
 @keyframes gridMove {
   0% { transform: translate(0, 0); }
-  100% { transform: translate(80px, 80px); }
+  100% { transform: translate(60px, 60px); }
 }
 
 .glowPulse {
@@ -36,18 +36,18 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 1200px;
-  height: 600px;
+  width: 1000px;
+  height: 500px;
   background: radial-gradient(ellipse at center, 
-    rgba(255, 46, 99, 0.06) 0%, 
-    rgba(0, 255, 204, 0.03) 30%, 
-    transparent 60%
+    rgba(220, 38, 38, 0.08) 0%, 
+    rgba(220, 38, 38, 0.03) 40%, 
+    transparent 70%
   );
-  animation: glowBreath 8s ease-in-out infinite;
+  animation: glowBreath 6s ease-in-out infinite;
 }
 
 @keyframes glowBreath {
-  0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
   50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
 }
 
@@ -56,9 +56,9 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 200px;
+  height: 150px;
   background: linear-gradient(0deg, 
-    rgba(255, 46, 99, 0.08) 0%, 
+    rgba(220, 38, 38, 0.06) 0%, 
     transparent 100%
   );
 }
@@ -71,7 +71,9 @@
 .particle {
   position: absolute;
   bottom: -10px;
-  background: #ff2e63;
+  width: 2px;
+  height: 2px;
+  background: #dc2626;
   border-radius: 50%;
   opacity: 0;
   animation: particleRise 5s ease-in-out infinite;
@@ -83,11 +85,11 @@
     transform: translateY(0) scale(0);
   }
   10% { 
-    opacity: 0.8;
+    opacity: 0.7;
     transform: translateY(-10vh) scale(1);
   }
   90% { 
-    opacity: 0.3;
+    opacity: 0.2;
     transform: translateY(-90vh) scale(0.5);
   }
   100% { 
@@ -96,47 +98,21 @@
   }
 }
 
-.dataStreams {
-  position: absolute;
-  inset: 0;
-}
-
-.dataStream {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: linear-gradient(180deg, 
-    transparent 0%, 
-    rgba(0, 255, 204, 0.4) 20%, 
-    rgba(0, 255, 204, 0.4) 80%, 
-    transparent 100%
-  );
-  animation: streamFlow 3s linear infinite;
-}
-
-@keyframes streamFlow {
-  0% { transform: translateY(-100%); opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { transform: translateY(100vh); opacity: 0; }
-}
-
 .content {
   position: relative;
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
   padding: 0 20px;
   opacity: 0;
-  transform: translateY(30px) scale(0.95);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   
   &.visible {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -153,13 +129,12 @@
   height: 4px;
   background: rgba(255, 255, 255, 0.08);
   border-radius: 4px;
-  position: relative;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, #00ffcc, #ff2e63);
+  background: linear-gradient(90deg, #dc2626, #f43f5e);
   border-radius: 4px;
   transition: width 0.1s linear;
   position: relative;
@@ -167,92 +142,43 @@
   &::after {
     content: '';
     position: absolute;
-    right: -6px;
+    right: -4px;
     top: 50%;
     transform: translateY(-50%);
-    width: 12px;
-    height: 12px;
-    background: #ff2e63;
+    width: 10px;
+    height: 10px;
+    background: #dc2626;
     border-radius: 50%;
     box-shadow: 
-      0 0 20px #ff2e63,
-      0 0 40px rgba(255, 46, 99, 0.5);
+      0 0 15px #dc2626,
+      0 0 30px rgba(220, 38, 38, 0.5);
   }
-}
-
-.progressGlow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 30px;
-  height: 30px;
-  background: radial-gradient(circle, rgba(255, 46, 99, 0.5), transparent);
-  pointer-events: none;
-  transition: left 0.1s linear;
 }
 
 .progressPercent {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.8rem;
-  color: #ff2e63;
-  min-width: 48px;
+  color: #dc2626;
+  min-width: 45px;
   text-align: right;
-  text-shadow: 0 0 15px rgba(255, 46, 99, 0.6);
+  text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
 }
 
 .statusSection {
   margin-top: 8px;
 }
 
-.statusBar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 24px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(0, 255, 204, 0.2);
-  border-radius: 6px;
-}
-
-.statusDot {
-  width: 8px;
-  height: 8px;
-  background: #00ff88;
-  border-radius: 50%;
-  animation: statusPulse 1.5s ease-in-out infinite;
-  box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
-}
-
-@keyframes statusPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.8); }
-}
-
 .statusText {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  color: #00ffcc;
-  letter-spacing: 0.15em;
-  text-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+  color: #6b7280;
+  letter-spacing: 0.12em;
+  animation: statusBlink 3s ease-in-out infinite;
 }
 
-.metaSection {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.metaText {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  color: rgba(255, 46, 99, 0.5);
-  letter-spacing: 0.2em;
-}
-
-.metaDivider {
-  color: rgba(0, 255, 204, 0.3);
-  font-size: 0.5rem;
+@keyframes statusBlink {
+  0%, 90%, 100% { opacity: 0.7; }
+  95% { opacity: 0.4; }
 }
 
 .footer {
@@ -260,73 +186,85 @@
   bottom: 40px;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .footerHeart {
-  color: #ff2e63;
-  animation: heartBeat 1s ease-in-out infinite;
+  color: #dc2626;
+  animation: heartBeat 1.2s ease-in-out infinite;
   
   svg {
-    width: 18px;
-    height: 18px;
-    filter: drop-shadow(0 0 8px rgba(255, 46, 99, 0.6));
+    width: 16px;
+    height: 16px;
+    filter: drop-shadow(0 0 6px rgba(220, 38, 38, 0.6));
   }
 }
 
 @keyframes heartBeat {
   0%, 100% { transform: scale(1); }
-  10% { transform: scale(1.15); }
-  20% { transform: scale(1); }
-  30% { transform: scale(1.1); }
-  40% { transform: scale(1); }
+  12% { transform: scale(1.15); }
+  24% { transform: scale(1); }
+  36% { transform: scale(1.1); }
+  48% { transform: scale(1); }
 }
 
 .footerDev {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #f0f4f8;
-  letter-spacing: 0.15em;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-}
-
-.footerCopyright {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   color: #6b7280;
+  letter-spacing: 0.2em;
 }
 
-.cornerDecorations {
+.cornerTL,
+.cornerTR,
+.cornerBL,
+.cornerBR {
   position: absolute;
-  inset: 24px;
-  pointer-events: none;
+  width: 40px;
+  height: 40px;
+  border-color: rgba(220, 38, 38, 0.4);
+  border-style: solid;
+  border-width: 0;
 }
 
-.cornerSVG {
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  opacity: 0.7;
-  
-  &:nth-child(1) { top: 0; left: 0; }
-  &:nth-child(2) { top: 0; right: 0; transform: scaleX(-1); }
-  &:nth-child(3) { bottom: 0; left: 0; transform: scaleY(-1); }
-  &:nth-child(4) { bottom: 0; right: 0; transform: scale(-1); }
+.cornerTL {
+  top: 20px;
+  left: 20px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+
+.cornerTR {
+  top: 20px;
+  right: 20px;
+  border-top-width: 2px;
+  border-right-width: 2px;
+}
+
+.cornerBL {
+  bottom: 20px;
+  left: 20px;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+}
+
+.cornerBR {
+  bottom: 20px;
+  right: 20px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
 }
 
 @media (max-width: 600px) {
-  .content {
-    gap: 24px;
-  }
-  
   .progressSection {
     max-width: 300px;
   }
   
-  .metaSection {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
+  .cornerTL,
+  .cornerTR,
+  .cornerBL,
+  .cornerBR {
+    width: 25px;
+    height: 25px;
   }
 }

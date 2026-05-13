@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styles from './AnimatedLogo.module.scss'
 
 interface AnimatedLogoProps {
@@ -30,66 +30,69 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     const width = rect.width
     const height = rect.height
     const baseline = height / 2
-    const amplitude = height * 0.35
-
-    const template = [
-      [0, 0], [8, 0], [12, -2], [16, 0], [18, 0],
-      [20, 0], [22, 4], [26, -25], [30, 6],
-      [34, 0], [38, 0], [42, 0], [46, -3], [52, 0], [60, 0], [100, 0]
-    ]
-
-    function interpolate(t: number): number {
-      for (let i = 0; i < template.length - 1; i++) {
-        const [t1, y1] = template[i]
-        const [t2, y2] = template[i + 1]
-        if (t >= t1 && t <= t2) {
-          const progress = (t - t1) / (t2 - t1)
-          return y1 + (y2 - y1) * progress
-        }
-      }
-      return 0
-    }
+    const amplitude = height * 0.4
 
     let x = 0
     let time = 0
     let prevY = baseline
 
+    function getY(t: number): number {
+      if (t < 8) return 0
+      if (t < 12) return -2
+      if (t < 16) return 0
+      if (t < 20) return 0
+      if (t < 22) return 3
+      if (t < 26) return -28
+      if (t < 30) return 6
+      if (t < 38) return 0
+      if (t < 46) return -3
+      if (t < 54) return 0
+      return 0
+    }
+
     function draw() {
       if (!ctx) return
-      
-      const speed = isHovered ? 4 : 2.5
+
+      const speed = isHovered ? 3.5 : 2.5
 
       ctx.clearRect(0, 0, width, height)
 
-      const cycleLength = 100
-      const tCycle = (time % cycleLength) / cycleLength * 100
-      const yVal = interpolate(tCycle)
+      const tCycle = (time % 100) / 100 * 100
+      const yVal = getY(tCycle)
       const newY = baseline + (yVal * amplitude / 30)
 
-      const glowAmount = isHovered ? 12 : 8
-      const lineWidth = isHovered ? 2.5 : 2
+      const glowSize = isHovered ? 15 : 10
+      const lineW = isHovered ? 2.5 : 2
 
       ctx.beginPath()
-      ctx.strokeStyle = '#ff2e63'
-      ctx.lineWidth = lineWidth
+      ctx.strokeStyle = '#dc2626'
+      ctx.lineWidth = lineW
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
-      ctx.shadowBlur = glowAmount
-      ctx.shadowColor = '#ff2e63'
+      ctx.shadowBlur = glowSize
+      ctx.shadowColor = '#f43f5e'
       
       ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
       ctx.lineTo(x, newY)
       ctx.stroke()
 
       ctx.beginPath()
-      ctx.strokeStyle = 'rgba(255, 46, 99, 0.4)'
-      ctx.lineWidth = lineWidth + 2
-      ctx.shadowBlur = glowAmount * 2
+      ctx.strokeStyle = 'rgba(220, 38, 38, 0.5)'
+      ctx.lineWidth = lineW + 4
+      ctx.shadowBlur = glowSize * 2
       ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
       ctx.lineTo(x, newY)
       ctx.stroke()
 
-      ctx.clearRect(x + speed + 1, 0, 30, height)
+      ctx.beginPath()
+      ctx.strokeStyle = 'rgba(244, 63, 94, 0.3)'
+      ctx.lineWidth = lineW + 10
+      ctx.shadowBlur = glowSize * 3
+      ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
+      ctx.lineTo(x, newY)
+      ctx.stroke()
+
+      ctx.clearRect(x + speed + 1, 0, 40, height)
 
       prevY = newY
       x += speed
@@ -109,8 +112,8 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
 
   const sizes = {
     small: { titleSize: '1rem', subtitleSize: '0.45rem', canvasHeight: '14px' },
-    medium: { titleSize: '1.3rem', subtitleSize: '0.5rem', canvasHeight: '18px' },
-    large: { titleSize: '1.8rem', subtitleSize: '0.6rem', canvasHeight: '24px' },
+    medium: { titleSize: '1.2rem', subtitleSize: '0.5rem', canvasHeight: '16px' },
+    large: { titleSize: '1.6rem', subtitleSize: '0.6rem', canvasHeight: '20px' },
   }
 
   const { titleSize, subtitleSize, canvasHeight } = sizes[size]
@@ -122,10 +125,8 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className={styles.textRow}>
-        <h1 className={styles.title}>
-          <span className={styles.fake} style={{ fontSize: titleSize }}>Fake</span>
-          <span className={styles.love} style={{ fontSize: titleSize }}>Love</span>
-        </h1>
+        <span className={styles.fake} style={{ fontSize: titleSize }}>Fake</span>
+        <span className={styles.love} style={{ fontSize: titleSize }}>Love</span>
       </div>
       
       <div className={styles.ecgRow} style={{ height: canvasHeight }}>

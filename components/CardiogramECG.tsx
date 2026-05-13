@@ -6,47 +6,25 @@ import styles from './CardiogramECG.module.scss'
 interface CardiogramECGProps {
   className?: string
   speed?: number
-  glowIntensity?: 'low' | 'medium' | 'high'
-}
-
-const ECG_TEMPLATES = {
-  normal: [
-    [0, 0], [8, 0], [12, -2], [16, 0], [18, 0],
-    [20, 0], [22, 4], [26, -30], [30, 8],
-    [34, 0], [38, 0], [42, 0], [46, -4], [52, 0], [60, 0], [100, 0]
-  ],
-  tachycardia: [
-    [0, 0], [5, 0], [8, -2], [12, 0], [14, 0],
-    [16, 0], [18, 4], [22, -25], [26, 6],
-    [30, 0], [34, 0], [38, 0], [42, -4], [48, 0], [55, 0], [100, 0]
-  ],
-  bradycardia: [
-    [0, 0], [10, 0], [15, -2], [20, 0], [24, 0],
-    [28, 0], [30, 4], [35, -32], [40, 8],
-    [44, 0], [52, 0], [58, 0], [62, -4], [70, 0], [80, 0], [100, 0]
-  ],
-}
-
-function interpolate(t: number, template: number[][]): number {
-  for (let i = 0; i < template.length - 1; i++) {
-    const [t1, y1] = template[i]
-    const [t2, y2] = template[i + 1]
-    if (t >= t1 && t <= t2) {
-      const progress = (t - t1) / (t2 - t1)
-      return y1 + (y2 - y1) * progress
-    }
-  }
-  return 0
+  lineColor?: string
+  glowColor?: string
 }
 
 export default function CardiogramECG({ 
   className = '', 
-  speed = 3,
-  glowIntensity = 'high'
+  speed = 3.5,
+  lineColor = '#dc2626',
+  glowColor = '#f43f5e'
 }: CardiogramECGProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [currentPattern, setCurrentPattern] = useState<keyof typeof ECG_TEMPLATES>('normal')
+  const [currentPattern, setCurrentPattern] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
+
+  const patterns = [
+    { name: 'SINUS', bpm: 76, cycle: 100 },
+    { name: 'TACHY', bpm: 120, cycle: 65 },
+    { name: 'BRADY', bpm: 45, cycle: 150 },
+  ]
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current
@@ -67,12 +45,12 @@ export default function CardiogramECG({
     const width = rect.width
     const height = rect.height
     const baseline = height / 2
-    const amplitude = height * 0.35
+    const amplitude = height * 0.38
 
     ctx.clearRect(0, 0, width, height)
 
-    const template = ECG_TEMPLATES[currentPattern]
-    const effectiveSpeed = isHovered ? speed * 1.8 : speed
+    const current = patterns[currentPattern]
+    const effectiveSpeed = isHovered ? speed * 1.6 : speed
 
     if (!canvas.dataset.lastX) {
       canvas.dataset.lastX = '0'
@@ -84,44 +62,57 @@ export default function CardiogramECG({
     let time = parseFloat(canvas.dataset.time || '0')
     let prevY = parseFloat(canvas.dataset.prevY || baseline.toString())
 
-    const cycleLength = currentPattern === 'tachycardia' ? 60 : 
-                       currentPattern === 'bradycardia' ? 140 : 100
+    const tCycle = (time % current.cycle) / current.cycle * 100
 
-    const tCycle = (time % cycleLength) / cycleLength * 100
-    const yVal = interpolate(tCycle, template)
+    const getY = (t: number): number => {
+      if (t < 8) return 0
+      if (t < 12) return -2
+      if (t < 16) return 0
+      if (t < 20) return 0
+      if (t < 22) return 3
+      if (t < 26) return -28
+      if (t < 30) return 6
+      if (t < 38) return 0
+      if (t < 46) return -3
+      if (t < 54) return 0
+      return 0
+    }
+
+    const yVal = getY(tCycle)
     const newY = baseline + (yVal * amplitude / 30)
 
+    const glowSize = isHovered ? 20 : 14
+    const lineW = isHovered ? 3.5 : 3
+
     ctx.beginPath()
-    ctx.strokeStyle = '#ff2e63'
-    ctx.lineWidth = 2.5
+    ctx.strokeStyle = lineColor
+    ctx.lineWidth = lineW
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
-    
-    const glowAmount = glowIntensity === 'high' ? 15 : glowIntensity === 'medium' ? 10 : 5
-    ctx.shadowBlur = glowAmount
-    ctx.shadowColor = '#ff2e63'
+    ctx.shadowBlur = glowSize
+    ctx.shadowColor = glowColor
     
     ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
     ctx.beginPath()
-    ctx.strokeStyle = 'rgba(255, 46, 99, 0.5)'
-    ctx.lineWidth = 6
-    ctx.shadowBlur = glowAmount * 2
+    ctx.strokeStyle = `rgba(220, 38, 38, 0.6)`
+    ctx.lineWidth = lineW + 3
+    ctx.shadowBlur = glowSize * 1.5
     ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
     ctx.beginPath()
-    ctx.strokeStyle = 'rgba(255, 150, 180, 0.3)'
-    ctx.lineWidth = 12
-    ctx.shadowBlur = glowAmount * 3
+    ctx.strokeStyle = `rgba(244, 63, 94, 0.4)`
+    ctx.lineWidth = lineW + 8
+    ctx.shadowBlur = glowSize * 2.5
     ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
-    ctx.clearRect(x + effectiveSpeed + 1, 0, 50, height)
+    ctx.clearRect(x + effectiveSpeed + 1, 0, 60, height)
 
     canvas.dataset.lastX = (x + effectiveSpeed).toString()
     canvas.dataset.time = (time + 1).toString()
@@ -134,7 +125,7 @@ export default function CardiogramECG({
     }
 
     requestAnimationFrame(draw)
-  }, [currentPattern, speed, isHovered, glowIntensity])
+  }, [currentPattern, speed, isHovered, lineColor, glowColor])
 
   useEffect(() => {
     const animationId = requestAnimationFrame(draw)
@@ -143,14 +134,12 @@ export default function CardiogramECG({
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const patterns = Object.keys(ECG_TEMPLATES) as (keyof typeof ECG_TEMPLATES)[]
-      const currentIndex = patterns.indexOf(currentPattern)
-      const nextIndex = (currentIndex + 1) % patterns.length
-      setCurrentPattern(patterns[nextIndex])
-    }, 8000)
-
+      setCurrentPattern(p => (p + 1) % patterns.length)
+    }, 6000)
     return () => clearInterval(interval)
-  }, [currentPattern])
+  }, [])
+
+  const current = patterns[currentPattern]
 
   return (
     <div 
@@ -158,49 +147,38 @@ export default function CardiogramECG({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={styles.textOverlay}>
-        <h1 className={styles.title}>
+      <div className={styles.header}>
+        <div className={styles.titleRow}>
           <span className={styles.fake}>Fake</span>
           <span className={styles.love}>Love</span>
-        </h1>
-        <div className={styles.subtitle}>ECG MONITOR</div>
+        </div>
+        <span className={styles.subtitle}>CARDIAC MONITOR</span>
       </div>
       
-      <div className={styles.screenWrapper}>
+      <div className={styles.monitor}>
         <canvas ref={canvasRef} className={styles.canvas} />
-        <div className={styles.gridOverlay} />
+        <div className={styles.grid} />
         <div className={styles.scanline} />
-        <div className={styles.cornerMarks}>
-          <span className={styles.cornerTL} />
-          <span className={styles.cornerTR} />
-          <span className={styles.cornerBL} />
-          <span className={styles.cornerBR} />
-        </div>
-      </div>
-
-      <div className={styles.monitorFrame}>
-        <div className={styles.frameGlow} />
+        <div className={styles.monitorBorder} />
+        <div className={styles.cornerTL} />
+        <div className={styles.cornerTR} />
+        <div className={styles.cornerBL} />
+        <div className={styles.cornerBR} />
       </div>
 
       <div className={styles.vitals}>
         <div className={styles.vital}>
-          <span className={styles.vitalLabel}>HEART RATE</span>
-          <span className={styles.vitalValue}>
-            {currentPattern === 'tachycardia' ? '142' : 
-             currentPattern === 'bradycardia' ? '48' : '76'} <span className={styles.vitalUnit}>BPM</span>
-          </span>
+          <span className={styles.vitalLabel}>BPM</span>
+          <span className={styles.vitalValue}>{current.bpm}</span>
         </div>
         <div className={styles.vital}>
           <span className={styles.vitalLabel}>RHYTHM</span>
-          <span className={styles.vitalValue}>
-            {currentPattern === 'normal' ? 'SINUS' : 
-             currentPattern === 'tachycardia' ? 'TACHY' : 'BRADY'}
-          </span>
+          <span className={styles.vitalValue}>{current.name}</span>
         </div>
         <div className={styles.vital}>
           <span className={styles.vitalLabel}>STATUS</span>
-          <span className={`${styles.vitalValue} ${styles.statusActive}`}>
-            <span className={styles.statusDot} />ALIVE
+          <span className={`${styles.vitalValue} ${styles.active}`}>
+            <span className={styles.dot} />LIVE
           </span>
         </div>
       </div>
