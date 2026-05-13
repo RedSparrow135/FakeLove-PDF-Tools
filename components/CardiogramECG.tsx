@@ -12,7 +12,7 @@ interface CardiogramECGProps {
 
 export default function CardiogramECG({ 
   className = '', 
-  speed = 3,
+  speed = 1.5,
   showBpmBoost = false,
   progress = 0
 }: CardiogramECGProps) {
@@ -53,15 +53,16 @@ export default function CardiogramECG({
 
     const getY = (t: number): number => {
       if (t < 5) return 0
-      if (t < 10) return -1
-      if (t < 15) return 0
-      if (t < 20) return 0
-      if (t < 25) return 2
-      if (t < 30) return -30
-      if (t < 35) return 8
-      if (t < 45) return 0
-      if (t < 55) return -4
-      if (t < 65) return 0
+      if (t < 12) return -2
+      if (t < 18) return 0
+      if (t < 24) return 0
+      if (t < 28) return 4
+      if (t < 34) return -32
+      if (t < 40) return 10
+      if (t < 50) return 0
+      if (t < 60) return -5
+      if (t < 70) return 0
+      if (t < 80) return -2
       return 0
     }
 

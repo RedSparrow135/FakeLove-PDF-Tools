@@ -53,7 +53,7 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     function draw() {
       if (!ctx) return
 
-      const speed = isHovered ? 3 : 2
+      const speed = isHovered ? 1.5 : 1
 
       const tCycle = (time % cycleLength) / cycleLength * 100
       const yVal = getY(tCycle)
