@@ -297,6 +297,14 @@ const translations: Translations = {
   'table.time': { es: 'TIEMPO', en: 'TIME' },
   'table.size': { es: 'TAMAÑO', en: 'SIZE' },
   'table.actions': { es: 'ACCIONES', en: 'ACTIONS' },
+
+  // Footer
+  'footer.brand': { es: 'Fake Love', en: 'Fake Love' },
+  'footer.subtitle': { es: 'PDF Tools', en: 'PDF Tools' },
+  'footer.tagline': { es: 'Hecho con odio', en: 'Made with hate' },
+  
+  // Trial
+  'trial.label': { es: 'PRUEBA', en: 'TRIAL' },
 }
 
 interface LanguageContextType {

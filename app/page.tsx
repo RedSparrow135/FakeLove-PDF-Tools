@@ -563,8 +563,8 @@ export default function DashboardPage() {
 
 <footer className={styles.footer}>
           <div className={styles.footerBrandSection}>
-            <span className={styles.footerBrand}>Fake Love</span>
-            <span className={styles.footerSubtitle}>PDF Tools</span>
+            <span className={styles.footerBrand}>{t('footer.brand')}</span>
+            <span className={styles.footerSubtitle}>{t('footer.subtitle')}</span>
           </div>
           <span className={styles.footerDivider}>|</span>
           
@@ -579,7 +579,7 @@ export default function DashboardPage() {
             <img src="/heart.png" alt="heart" className={styles.footerHeart} />
             <div className={styles.footerDevText}>
               <span className={styles.footerDevName}>CHARLES-X</span>
-              <span className={styles.footerDevTagline}>Hecho con odio</span>
+              <span className={styles.footerDevTagline}>{t('footer.tagline')}</span>
             </div>
           </div>
         </footer>
