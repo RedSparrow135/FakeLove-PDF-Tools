@@ -305,6 +305,11 @@ const translations: Translations = {
   
   // Trial
   'trial.label': { es: 'PRUEBA', en: 'TRIAL' },
+  'trial.limitNote': { es: 'Límite de 4.5MB. Archivos ilimitados en servidor propio:', en: '4.5MB limit. Unlimited files on self-hosted server:' },
+  'trial.fileTooLarge': { es: 'Archivo muy grande. El tamaño máximo es 4.5MB.', en: 'File too large. Maximum size is 4.5MB.' },
+  'trial.fileTooLargeNamed': { es: 'El archivo es muy grande. Máximo: 4.5MB', en: 'File too large. Maximum: 4.5MB' },
+  'trial.totalSizeExceeds': { es: 'El tamaño total excede 4.5MB. No se puede procesar en Vercel.', en: 'Total size exceeds 4.5MB. Cannot process on Vercel.' },
+  'trial.versionWarning': { es: 'Versión de prueba: Límite de 4.5MB por archivo en Vercel. Algunos archivos pueden fallar.', en: 'Trial version: 4.5MB per file limit on Vercel. Some files may fail.' },
 }
 
 interface LanguageContextType {
