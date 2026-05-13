@@ -9,142 +9,74 @@ interface AnimatedLogoProps {
 }
 
 export default function AnimatedLogo({ size = 'medium', animated = true }: AnimatedLogoProps) {
-  const [phase, setPhase] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
-  const [isGlitching, setIsGlitching] = useState(false)
-
-  useEffect(() => {
-    if (!animated) return
-    
-    const interval = setInterval(() => {
-      setPhase(p => (p + 1) % 100)
-    }, isHovered ? 20 : 40)
-    
-    return () => clearInterval(interval)
-  }, [animated, isHovered])
-
-  useEffect(() => {
-    const handleClick = () => {
-      setIsGlitching(true)
-      setTimeout(() => setIsGlitching(false), 300)
-    }
-    
-    window.addEventListener('click', handleClick)
-    return () => window.removeEventListener('click', handleClick)
-  }, [])
 
   const sizes = {
-    small: { icon: 32, text: '0.9rem', cardio: 100 },
-    medium: { icon: 48, text: '1.1rem', cardio: 120 },
-    large: { icon: 64, text: '1.4rem', cardio: 150 },
+    small: { height: '16px', fontSize: '0.75rem', fontSizeSub: '0.45rem' },
+    medium: { height: '22px', fontSize: '1rem', fontSizeSub: '0.55rem' },
+    large: { height: '32px', fontSize: '1.4rem', fontSizeSub: '0.65rem' },
   }
 
-  const { icon, text, cardio } = sizes[size]
+  const { height, fontSize, fontSizeSub } = sizes[size]
 
-  const cardioPoints = [
-    `M0,${cardio / 2}`,
-    `L${cardio * 0.15},${cardio / 2}`,
-    `L${cardio * 0.18},${cardio / 2}`,
-    `L${cardio * 0.2},${cardio / 4}`,
-    `L${cardio * 0.22},${cardio * 0.9}`,
-    `L${cardio * 0.25},${cardio / 3}`,
-    `L${cardio * 0.28},${cardio * 0.55}`,
-    `L${cardio * 0.32},${cardio / 2}`,
-    `L${cardio * 0.4},${cardio / 2}`,
-    `L${cardio * 0.43},${cardio / 2}`,
-    `L${cardio * 0.45},${cardio / 4}`,
-    `L${cardio * 0.47},${cardio * 0.85}`,
-    `L${cardio * 0.5},${cardio / 3}`,
-    `L${cardio * 0.53},${cardio * 0.5}`,
-    `L${cardio * 0.57},${cardio / 2}`,
-    `L${cardio},${cardio / 2}`,
+  const cardioPaths = [
+    'M0,50 L40,50 L48,50 L52,20 L56,80 L60,30 L64,45 L68,50 L120,50 L128,50 L132,20 L136,80 L140,30 L144,45 L148,50 L200,50 L208,50 L212,20 L216,80 L220,30 L224,45 L228,50 L280,50 L288,50 L292,20 L296,80 L300,30 L304,45 L308,50 L360,50 L368,50 L372,20 L376,80 L380,30 L384,45 L388,50',
   ].join(' ')
-
-  const pathLength = cardio * 1.5
 
   return (
     <div 
-      className={`${styles.logo} ${isGlitching ? styles.glitching : ''}`}
+      className={`${styles.logo} ${isHovered ? styles.hovered : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={styles.iconContainer} style={{ width: icon, height: icon }}>
+      <div className={styles.textWrapper}>
+        <span className={styles.fake} style={{ fontSize }}>Fake</span>
+        <span className={styles.love} style={{ fontSize }}>Love</span>
+      </div>
+      
+      <div className={styles.cardiogramWrapper} style={{ height }}>
         <svg 
-          viewBox={`0 0 ${cardio} ${cardio}`} 
-          className={styles.cardioSvg}
-          style={{ width: icon, height: icon }}
+          className={styles.cardiogramSvg}
+          viewBox="0 0 400 100" 
+          preserveAspectRatio="none"
+          style={{ height }}
         >
           <defs>
-            <linearGradient id={`cardioGrad-${size}`} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#ff2e63" stopOpacity="0.3" />
+            <linearGradient id="cardioGradLogo" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#ff2e63" stopOpacity="0" />
+              <stop offset="20%" stopColor="#ff2e63" stopOpacity="0.6" />
               <stop offset="50%" stopColor="#ff0040" stopOpacity="1" />
-              <stop offset="100%" stopColor="#ff2e63" stopOpacity="0.3" />
+              <stop offset="80%" stopColor="#ff2e63" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#ff2e63" stopOpacity="0" />
             </linearGradient>
-            <filter id={`glow-${size}`}>
-              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <filter id="cardioGlowLogo" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
               <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-            <filter id={`glitch-${size}`}>
-              <feOffset in="SourceGraphic" dx="2" dy="0" result="red"/>
-              <feOffset in="SourceGraphic" dx="-2" dy="0" result="blue"/>
-              <feColorMatrix in="red" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="redOut"/>
-              <feColorMatrix in="blue" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blueOut"/>
-              <feMerge>
-                <feMergeNode in="redOut"/>
-                <feMergeNode in="blueOut"/>
+                <feMergeNode in="blur"/>
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
           </defs>
           
           <path
-            className={styles.cardioGlow}
-            d={cardioPoints}
+            className={styles.cardioPath}
+            d={cardioPaths}
             fill="none"
-            stroke="#ff2e63"
-            strokeWidth="6"
+            stroke="url(#cardioGradLogo)"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            filter={`url(#glow-${size})`}
+            filter="url(#cardioGlowLogo)"
             style={{
-              strokeDasharray: pathLength,
-              strokeDashoffset: animated ? (phase < 50 ? pathLength - (phase / 50) * pathLength : 0) : 0,
-            }}
-          />
-          
-          <path
-            className={styles.cardioMain}
-            d={cardioPoints}
-            fill="none"
-            stroke={`url(#cardioGrad-${size})`}
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            filter={isGlitching ? `url(#glitch-${size})` : undefined}
-            style={{
-              strokeDasharray: pathLength,
-              strokeDashoffset: animated ? (phase < 50 ? pathLength - (phase / 50) * pathLength : 0) : 0,
+              animationDuration: isHovered ? '1.5s' : '2.5s',
             }}
           />
         </svg>
-        
-        <div className={styles.iconBackground} />
       </div>
 
-      <div className={styles.textContainer}>
-        <span className={styles.text} style={{ fontSize: text }}>
-          <span className={styles.textFake}>Fake</span>
-          <span className={styles.textLove}>Love</span>
-        </span>
-        <span className={styles.subtitle}>PDF TOOLS</span>
-      </div>
-
-      {animated && (
-        <div className={styles.scanline} />
-      )}
+      <span className={styles.subtitle} style={{ fontSize: fontSizeSub }}>
+        PDF TOOLS
+      </span>
     </div>
   )
 }

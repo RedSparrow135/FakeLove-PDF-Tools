@@ -1,165 +1,80 @@
 .logo {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  position: relative;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: scale(1.02);
-  }
-
-  &.glitching {
-    animation: glitchShake 0.3s ease;
-
-    .textFake,
-    .textLove {
-      animation: glitchText 0.3s ease;
-    }
-  }
-}
-
-@keyframes glitchShake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-3px) skewX(-1deg); }
-  40% { transform: translateX(3px) skewX(1deg); }
-  60% { transform: translateX(-2px); }
-  80% { transform: translateX(2px); }
-}
-
-@keyframes glitchText {
-  0%, 100% { 
-    text-shadow: none;
-    transform: translateX(0);
-  }
-  25% { 
-    text-shadow: 2px 0 #00ffff, -2px 0 #ff0000;
-    transform: translateX(-2px);
-  }
-  50% { 
-    text-shadow: -2px 0 #00ffff, 2px 0 #ff0000;
-    transform: translateX(2px);
-  }
-  75% { 
-    text-shadow: 1px 0 #00ffff, -1px 0 #ff0000;
-    transform: translateX(-1px);
-  }
-}
-
-.iconContainer {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.iconBackground {
-  position: absolute;
-  inset: -4px;
-  background: linear-gradient(135deg, rgba(255, 46, 99, 0.2), rgba(255, 0, 64, 0.1));
-  border-radius: 12px;
-  backdrop-filter: blur(8px);
-  z-index: -1;
-}
-
-.cardioSvg {
-  overflow: visible;
-  filter: drop-shadow(0 0 12px rgba(255, 46, 99, 0.5));
-}
-
-.cardioGlow {
-  opacity: 0.4;
-  transition: opacity 0.3s ease;
-  
-  .logo:hover & {
-    opacity: 0.7;
-  }
-}
-
-.cardioMain {
-  transition: stroke-width 0.2s ease;
-  
-  .logo:hover & {
-    stroke-width: 3;
-  }
-}
-
-.textContainer {
-  display: flex;
   flex-direction: column;
   gap: 2px;
+  cursor: pointer;
 }
 
-.text {
+.textWrapper {
   display: flex;
+  align-items: baseline;
   gap: 0;
+}
+
+.fake {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
+  color: #f9fafb;
   letter-spacing: -0.02em;
   line-height: 1;
-}
-
-.textFake {
-  color: #f9fafb;
-  text-shadow: 0 0 20px rgba(255, 46, 99, 0.3);
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 20px rgba(255, 46, 99, 0.2);
   
-  .logo:hover & {
+  .logo.hovered & {
     color: #ff2e63;
     text-shadow: 0 0 30px rgba(255, 46, 99, 0.6);
   }
 }
 
-.textLove {
+.love {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
   color: #ff2e63;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  transition: all 0.3s ease;
   text-shadow: 0 0 20px rgba(255, 46, 99, 0.4);
-  transition: all 0.2s ease;
   
-  .logo:hover & {
+  .logo.hovered & {
     text-shadow: 0 0 40px rgba(255, 46, 99, 0.8);
+  }
+}
+
+.cardiogramWrapper {
+  width: 100%;
+  overflow: visible;
+  position: relative;
+}
+
+.cardiogramSvg {
+  width: 100%;
+  display: block;
+}
+
+.cardioPath {
+  stroke-dasharray: 1600;
+  animation: cardioFlow 2.5s linear infinite;
+}
+
+@keyframes cardioFlow {
+  0% {
+    stroke-dashoffset: 1600;
+  }
+  100% {
+    stroke-dashoffset: 0;
   }
 }
 
 .subtitle {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
   color: #6b7280;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
+  margin-top: 2px;
 }
 
-.scanline {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 46, 99, 0.3) 20%, 
-    rgba(255, 46, 99, 0.5) 50%, 
-    rgba(255, 46, 99, 0.3) 80%, 
-    transparent
-  );
-  animation: scanMove 3s linear infinite;
-  pointer-events: none;
-  transform: translateY(-50%);
-}
-
-@keyframes scanMove {
-  0% { 
-    opacity: 0;
-    transform: translateY(-50%) translateX(-100%);
+.logo.hovered {
+  .cardioPath {
+    animation-duration: 1.5s;
   }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { 
-    opacity: 0;
-    transform: translateY(-50%) translateX(200%);
-  }
-}
-
-.logo:hover .scanline {
-  animation-duration: 1.5s;
 }
