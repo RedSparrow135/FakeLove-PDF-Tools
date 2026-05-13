@@ -11,26 +11,18 @@ function gaussian(x: number, mean: number, sigma: number): number {
   return Math.exp(-Math.pow(x - mean, 2) / (2 * sigma * sigma))
 }
 
-function cardiogramY(x: number, spike: number = 0): number {
+function cardiogramY(x: number): number {
   const p = 0.6 * Math.sin(x) * gaussian(x, 3, 0.3)
   const q = -1.5 * gaussian(x, 3.2, 0.15)
   const r = 2 * gaussian(x, 3.3, 0.08)
   const s = -1 * gaussian(x, 3.4, 0.15)
   const t = 0.5 * gaussian(x, 4, 0.3)
-  const spikeEffect = spike * 3 * gaussian(x, 3.3, 0.05)
-  return -(p + q + r + s + t + spikeEffect)
+  return -(p + q + r + s + t)
 }
 
 export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isHovered, setIsHovered] = useState(false)
-  const [spike, setSpike] = useState(0)
-  const animationRef = useRef<number | null>(null)
-
-  const handleClick = () => {
-    setSpike(1)
-    setTimeout(() => setSpike(0), 150)
-  }
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -39,102 +31,72 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const setupCanvas = () => {
-      const dpr = window.devicePixelRatio || 1
-      const rect = canvas.getBoundingClientRect()
-      
-      if (rect.width === 0 || rect.height === 0) {
-        setTimeout(setupCanvas, 50)
-        return
-      }
-
-      canvas.width = rect.width * dpr
-      canvas.height = rect.height * dpr
-      ctx.scale(dpr, dpr)
+    const dpr = window.devicePixelRatio || 1
+    const rect = canvas.getBoundingClientRect()
+    
+    if (rect.width === 0 || rect.height === 0) {
+      return
     }
 
-    setupCanvas()
+    canvas.width = rect.width * dpr
+    canvas.height = rect.height * dpr
+    ctx.scale(dpr, dpr)
 
-    const rect = canvas.getBoundingClientRect()
     const width = rect.width
     const height = rect.height
     const baseline = height / 2
     const amplitude = height * 0.38
 
-    const cycleLength = 100
-    let phase = 0
-
-    const draw = () => {
-      if (!ctx) return
-
-      const effectiveSpeed = isHovered ? 3.5 : 2
-
-      ctx.clearRect(0, 0, width, height)
-
-      const points: [number, number][] = []
-      const samples = 100
-
-      for (let i = 0; i < samples; i++) {
-        const t = ((phase + i) % cycleLength) / cycleLength * Math.PI * 6
-        const yVal = cardiogramY(t, spike)
-        const xPos = (i / samples) * width
-        const yPos = baseline - yVal * amplitude
-        points.push([xPos, yPos])
-      }
-
-      const glowSize = isHovered ? 8 : 5
-
-      ctx.beginPath()
-      ctx.strokeStyle = '#ff0000'
-      ctx.lineWidth = 2.5
-      ctx.lineCap = 'round'
-      ctx.lineJoin = 'round'
-      ctx.shadowBlur = glowSize
-      ctx.shadowColor = '#ff0000'
-      ctx.moveTo(points[0][0], points[0][1])
-      for (let j = 1; j < points.length; j++) {
-        ctx.lineTo(points[j][0], points[j][1])
-      }
-      ctx.stroke()
-
-      ctx.beginPath()
-      ctx.strokeStyle = '#ff3333'
-      ctx.lineWidth = 1.8
-      ctx.shadowBlur = glowSize * 0.6
-      ctx.shadowColor = '#ff0000'
-      ctx.moveTo(points[0][0], points[0][1])
-      for (let j = 1; j < points.length; j++) {
-        ctx.lineTo(points[j][0], points[j][1])
-      }
-      ctx.stroke()
-
-      ctx.beginPath()
-      ctx.strokeStyle = '#ffffff'
-      ctx.lineWidth = 0.8
-      ctx.shadowBlur = 0
-      ctx.moveTo(points[0][0], points[0][1])
-      for (let j = 1; j < points.length; j++) {
-        ctx.lineTo(points[j][0], points[j][1])
-      }
-      ctx.stroke()
-
-      phase += effectiveSpeed
-      if (phase >= cycleLength) {
-        phase = 0
-      }
-
-      animationRef.current = requestAnimationFrame(draw)
-    }
-
     ctx.clearRect(0, 0, width, height)
-    animationRef.current = requestAnimationFrame(draw)
 
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
+    const points: [number, number][] = []
+    const samples = 100
+
+    for (let i = 0; i < samples; i++) {
+      const t = (i / samples) * Math.PI * 6
+      const yVal = cardiogramY(t)
+      const xPos = (i / samples) * width
+      const yPos = baseline - yVal * amplitude
+      points.push([xPos, yPos])
     }
-  }, [isHovered, spike])
+
+    const glowSize = isHovered ? 8 : 5
+
+    ctx.beginPath()
+    ctx.strokeStyle = '#ff0000'
+    ctx.lineWidth = 2.5
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    ctx.shadowBlur = glowSize
+    ctx.shadowColor = '#ff0000'
+    ctx.moveTo(points[0][0], points[0][1])
+    for (let j = 1; j < points.length; j++) {
+      ctx.lineTo(points[j][0], points[j][1])
+    }
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.strokeStyle = '#ff3333'
+    ctx.lineWidth = 1.8
+    ctx.shadowBlur = glowSize * 0.6
+    ctx.shadowColor = '#ff0000'
+    ctx.moveTo(points[0][0], points[0][1])
+    for (let j = 1; j < points.length; j++) {
+      ctx.lineTo(points[j][0], points[j][1])
+    }
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.strokeStyle = '#ffffff'
+    ctx.lineWidth = 0.8
+    ctx.shadowBlur = 0
+    ctx.moveTo(points[0][0], points[0][1])
+    for (let j = 1; j < points.length; j++) {
+      ctx.lineTo(points[j][0], points[j][1])
+    }
+    ctx.stroke()
+
+  }, [isHovered])
 
   const sizes = {
     small: { titleSize: '1rem', subtitleSize: '0.45rem', canvasHeight: '12px' },
@@ -149,7 +111,6 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
       className={`${styles.logo} ${isHovered ? styles.hovered : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={handleClick}
     >
       <div className={styles.textRow}>
         <span className={styles.fake} style={{ fontSize: titleSize }}>Fake</span>
