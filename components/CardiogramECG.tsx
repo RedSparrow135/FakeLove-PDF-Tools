@@ -187,8 +187,10 @@ export default function CardiogramECG({
           <span className={styles.vitalValue}>{rhythmName}</span>
         </div>
         <div className={styles.vital}>
-          <span className={styles.vitalLabel}>DEV</span>
-          <span className={`${styles.vitalValue} ${styles.dev}`}>CHARLES-X</span>
+          <span className={styles.vitalLabel}>STATUS</span>
+          <span className={`${styles.vitalValue} ${styles.statusStable}`}>
+            {progress > 80 ? '↑↑↑' : 'STABLE'}
+          </span>
         </div>
       </div>
     </div>
