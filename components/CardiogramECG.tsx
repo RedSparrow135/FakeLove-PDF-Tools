@@ -6,18 +6,27 @@ import styles from './CardiogramECG.module.scss'
 interface CardiogramECGProps {
   className?: string
   speed?: number
+  showBpmBoost?: boolean
+  progress?: number
 }
 
-export default function CardiogramECG({ className = '', speed = 4 }: CardiogramECGProps) {
+export default function CardiogramECG({ 
+  className = '', 
+  speed = 4,
+  showBpmBoost = false,
+  progress = 0
+}: CardiogramECGProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [currentPattern, setCurrentPattern] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
 
-  const patterns = [
-    { name: 'SINUS', bpm: 76, cycle: 100 },
-    { name: 'TACHY', bpm: 120, cycle: 65 },
-    { name: 'BRADY', bpm: 45, cycle: 150 },
-  ]
+  const getBpm = (): number => {
+    if (showBpmBoost && progress > 80) {
+      const boost = Math.floor((progress - 80) * 3)
+      return 76 + boost
+    }
+    return 76
+  }
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current
@@ -40,22 +49,22 @@ export default function CardiogramECG({ className = '', speed = 4 }: CardiogramE
     const baseline = height / 2
     const amplitude = height * 0.38
 
-    ctx.clearRect(0, 0, width, height)
-
-    const current = patterns[currentPattern]
-    const effectiveSpeed = isHovered ? speed * 1.8 : speed
+    const currentBpm = getBpm()
+    const cycleLength = currentBpm > 100 ? 65 : currentBpm < 60 ? 140 : 100
 
     if (!canvas.dataset.lastX) {
       canvas.dataset.lastX = '0'
       canvas.dataset.time = '0'
       canvas.dataset.prevY = baseline.toString()
+      canvas.dataset.prevX = '0'
     }
 
     let x = parseFloat(canvas.dataset.lastX || '0')
+    let prevX = parseFloat(canvas.dataset.prevX || '0')
     let time = parseFloat(canvas.dataset.time || '0')
     let prevY = parseFloat(canvas.dataset.prevY || baseline.toString())
 
-    const tCycle = (time % current.cycle) / current.cycle * 100
+    const tCycle = (time % cycleLength) / cycleLength * 100
 
     const getY = (t: number): number => {
       if (t < 8) return 0
@@ -74,35 +83,35 @@ export default function CardiogramECG({ className = '', speed = 4 }: CardiogramE
     const yVal = getY(tCycle)
     const newY = baseline + (yVal * amplitude / 30)
 
-    const glowSize = isHovered ? 30 : 22
+    const effectiveSpeed = isHovered ? speed * 1.8 : speed
 
     ctx.beginPath()
     ctx.strokeStyle = '#ff0000'
     ctx.lineWidth = 5
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
-    ctx.shadowBlur = glowSize
+    ctx.shadowBlur = 25
     ctx.shadowColor = '#ff0000'
     
-    ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
+    ctx.moveTo(prevX, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
     ctx.beginPath()
     ctx.strokeStyle = '#ff3333'
     ctx.lineWidth = 4
-    ctx.shadowBlur = glowSize * 0.8
+    ctx.shadowBlur = 20
     ctx.shadowColor = '#ff0000'
-    ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
+    ctx.moveTo(prevX, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
     ctx.beginPath()
     ctx.strokeStyle = '#ff6666'
     ctx.lineWidth = 3
-    ctx.shadowBlur = glowSize * 0.5
+    ctx.shadowBlur = 15
     ctx.shadowColor = '#ff0000'
-    ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
+    ctx.moveTo(prevX, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
@@ -110,38 +119,36 @@ export default function CardiogramECG({ className = '', speed = 4 }: CardiogramE
     ctx.strokeStyle = '#ffffff'
     ctx.lineWidth = 1.5
     ctx.shadowBlur = 0
-    ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
+    ctx.moveTo(prevX, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
-    ctx.clearRect(x + effectiveSpeed + 2, 0, 80, height)
+    ctx.fillStyle = '#050505'
+    ctx.fillRect(x + effectiveSpeed, 0, 100, height)
 
+    canvas.dataset.prevX = x.toString()
     canvas.dataset.lastX = (x + effectiveSpeed).toString()
     canvas.dataset.time = (time + 1).toString()
     canvas.dataset.prevY = newY.toString()
 
     if (x > width) {
       x = 0
+      prevX = 0
       canvas.dataset.lastX = '0'
-      ctx.clearRect(0, 0, 10, height)
+      canvas.dataset.prevX = '0'
+      ctx.clearRect(0, 0, 5, height)
     }
 
     requestAnimationFrame(draw)
-  }, [currentPattern, speed, isHovered])
+  }, [speed, isHovered, getBpm])
 
   useEffect(() => {
     const animationId = requestAnimationFrame(draw)
     return () => cancelAnimationFrame(animationId)
   }, [draw])
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentPattern(p => (p + 1) % patterns.length)
-    }, 6000)
-    return () => clearInterval(interval)
-  }, [])
-
-  const current = patterns[currentPattern]
+  const currentBpm = getBpm()
+  const rhythmName = currentBpm > 100 ? 'TACHY' : currentBpm < 60 ? 'BRADY' : 'SINUS'
 
   return (
     <div 
@@ -171,17 +178,17 @@ export default function CardiogramECG({ className = '', speed = 4 }: CardiogramE
       <div className={styles.vitals}>
         <div className={styles.vital}>
           <span className={styles.vitalLabel}>BPM</span>
-          <span className={styles.vitalValue}>{current.bpm}</span>
+          <span className={`${styles.vitalValue} ${progress > 80 ? styles.boost : ''}`}>
+            {currentBpm}
+          </span>
         </div>
         <div className={styles.vital}>
           <span className={styles.vitalLabel}>RHYTHM</span>
-          <span className={styles.vitalValue}>{current.name}</span>
+          <span className={styles.vitalValue}>{rhythmName}</span>
         </div>
         <div className={styles.vital}>
-          <span className={styles.vitalLabel}>STATUS</span>
-          <span className={`${styles.vitalValue} ${styles.active}`}>
-            <span className={styles.dot} />LIVE
-          </span>
+          <span className={styles.vitalLabel}>DEV</span>
+          <span className={`${styles.vitalValue} ${styles.dev}`}>CHARLES-X</span>
         </div>
       </div>
     </div>

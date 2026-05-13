@@ -38,6 +38,7 @@ import { themes, getTheme, Theme } from '@/lib/themes'
 import FileUploader from '@/components/FileUploader'
 import SplashScreen from '@/components/SplashScreen'
 import AnimatedLogo from '@/components/AnimatedLogo'
+import CardiogramECG from '@/components/CardiogramECG'
 import styles from './page.module.scss'
 
 type Category = 'dashboard' | 'pdf-tools' | 'convert' | 'history' | 'settings'
@@ -322,6 +323,8 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </section>
+
+              <CardiogramECG className={styles.cardiacMonitor} speed={4} />
 
               <div className={styles.introBanner}>
                 <div className={styles.introContent}>
