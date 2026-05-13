@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import {
   DndContext,
@@ -48,11 +48,6 @@ export default function MergePage() {
 
   const { setNodeRef: setDropZoneRef } = useDroppable({ id: 'workspace' })
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  )
-
   const getPageCount = async (file: File): Promise<number> => {
     try {
       const arrayBuffer = await file.arrayBuffer()
@@ -61,6 +56,52 @@ export default function MergePage() {
       return pdf.getPageCount()
     } catch { return 1 }
   }
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const fileKey = params.get('f')
+    if (fileKey) {
+      const fileData = sessionStorage.getItem(fileKey)
+      if (fileData) {
+        try {
+          const parsed = JSON.parse(fileData)
+          const binaryString = atob(parsed.data)
+          const bytes = new Uint8Array(binaryString.length)
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+          }
+          const file = new File([bytes], parsed.name, { type: parsed.type })
+          
+          if (file.size > MAX_SIZE) {
+setWarning(`⚠️ "${file.name}" ${t('trial.fileTooLarge')}`)
+          } else {
+            getPageCount(file).then((pageCount) => {
+              const allPages = Array.from({ length: pageCount }, (_, i) => i + 1)
+              const newFile: PDFFileData = {
+                id: `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                file,
+                name: file.name,
+                size: file.size,
+                pageCount,
+                selectedPages: allPages,
+              }
+              setFiles((prev) => [...prev, newFile])
+            })
+          }
+          
+          sessionStorage.removeItem(fileKey)
+          window.history.replaceState({}, '', window.location.pathname)
+        } catch (e) {
+          console.error('Error loading file:', e)
+        }
+      }
+    }
+  }, [])
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
 
   const handleFilesSelected = useCallback(async (newFiles: File[]) => {
     setError(null)
@@ -140,6 +181,19 @@ export default function MergePage() {
       setError(t('merge.error1'))
       return
     }
+    
+    const totalSize = validFiles.reduce((acc, f) => acc + f.size, 0)
+    if (totalSize > MAX_SIZE) {
+      setError('⚠️ El tamaño total excede 4.5MB. No se puede procesar en Vercel.')
+      return
+    }
+    
+    const oversizedFiles = validFiles.filter(f => f.size > MAX_SIZE)
+    if (oversizedFiles.length > 0) {
+      setError(`⚠️ "${oversizedFiles[0].name}" es muy grande. Límite: 4.5MB`)
+      return
+    }
+    
     setError(null)
     setIsProcessing(true)
 
@@ -166,7 +220,11 @@ export default function MergePage() {
         formData.append('pages', pf.selectedPages.join(','))
       }
       const response = await fetch('/api/merge', { method: 'POST', body: formData })
-      if (!response.ok) throw new Error('Merge failed')
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }))
+        throw new Error(errorData.error || 'Merge failed')
+      }
       
       clearInterval(progressInterval)
       updateProcess(id, { progress: 100 })
@@ -182,10 +240,11 @@ export default function MergePage() {
       })
       
       setResult({ url, name: 'merged.pdf' })
-    } catch {
+    } catch (err) {
       clearInterval(progressInterval)
-      updateProcess(id, { status: 'failed', error: t('common.error') })
-      setError(t('common.error'))
+      const errorMsg = err instanceof Error ? err.message : t('common.error')
+      updateProcess(id, { status: 'failed', error: errorMsg })
+      setError(errorMsg)
     } finally {
       setIsProcessing(false)
     }
@@ -242,6 +301,14 @@ export default function MergePage() {
         <Link href="/" className={styles.backLink}>{t('common.back')}</Link>
         <h1 className={styles.title}>{t('merge.title')}</h1>
         <p className={styles.subtitle}>{t('merge.humor')}</p>
+        
+        <div className={styles.trialBanner}>
+          <span className={styles.trialBadge}>{t('trial.label')}</span>
+          <p>{t('trial.limitNote')}</p>
+          <a href="https://github.com/RedSparrow135/FakeLove-PDF-Tools" target="_blank" rel="noopener noreferrer" className={styles.repoButton}>
+            <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+        </div>
 
         <DndContext
           sensors={sensors}

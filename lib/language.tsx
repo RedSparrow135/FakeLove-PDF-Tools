@@ -15,6 +15,26 @@ const translations: Translations = {
   'dashboard.moto': { es: 'Sin límites. Sin sentimientos. Solo procesamiento.', en: 'No limits. No feelings. Just processing.' },
   'dashboard.selectCategory': { es: 'Selecciona una categoría del menú para comenzar', en: 'Select a category from the sidebar to begin' },
   
+  // Tool Titles
+  'tool.merge.title': { es: 'FUSIONAR', en: 'MERGE' },
+  'tool.split.title': { es: 'DIVIDIR', en: 'SPLIT' },
+  'tool.compress.title': { es: 'COMPRIMIR', en: 'COMPRESS' },
+  'tool.imagetopdf.title': { es: 'IMAGEN PDF', en: 'IMAGE PDF' },
+  'tool.word.title': { es: 'WORD PDF', en: 'WORD PDF' },
+  'tool.excel.title': { es: 'EXCEL PDF', en: 'EXCEL PDF' },
+  'tool.pptx.title': { es: 'PPTX PDF', en: 'PPTX PDF' },
+  'tool.jpg.title': { es: 'JPG PDF', en: 'JPG PDF' },
+  
+  // Tool Descriptions
+  'tool.merge.desc': { es: 'Combina múltiples documentos', en: 'Combine multiple documents' },
+  'tool.split.desc': { es: 'Extrae páginas específicas', en: 'Extract specific pages' },
+  'tool.compress.desc': { es: 'Reduce el tamaño del archivo', en: 'Reduce file size' },
+  'tool.imagetopdf.desc': { es: 'Convierte imágenes a PDF', en: 'Convert images to PDF' },
+  'tool.word.desc': { es: 'DOC/DOCX a PDF', en: 'DOC/DOCX to PDF' },
+  'tool.excel.desc': { es: 'XLS/XLSX a PDF', en: 'XLS/XLSX to PDF' },
+  'tool.pptx.desc': { es: 'PPT/PPTX a PDF', en: 'PPT/PPTX to PDF' },
+  'tool.jpg.desc': { es: 'JPG/PNG a PDF', en: 'JPG/PNG to PDF' },
+  
   // Navigation
   'nav.dashboard': { es: 'Panel', en: 'Dashboard' },
   'nav.pdfTools': { es: 'Herramientas PDF', en: 'PDF Tools' },
@@ -233,6 +253,63 @@ const translations: Translations = {
   
   // Loader
   'loader.processing': { es: 'Procesando...', en: 'Processing...' },
+
+  // DropZone & Common UI
+  'dropzone.hint': { es: 'Solo PDF • Máximo 50MB', en: 'PDF only • Max 50MB' },
+  'dropzone.hintImage': { es: 'Imágenes • Máximo 50MB', en: 'Images • Max 50MB' },
+  'dropzone.hintDoc': { es: 'Solo documentos', en: 'Documents only' },
+  
+  // Buttons
+  'button.process': { es: 'Procesar', en: 'Process' },
+  'button.convert': { es: 'Convertir', en: 'Convert' },
+  'button.extract': { es: 'Extraer', en: 'Extract' },
+  'button.compress': { es: 'Comprimir', en: 'Compress' },
+  'button.merge': { es: 'Fusionar', en: 'Merge' },
+  
+  // Notifications
+  'notifications.title': { es: 'Notificaciones', en: 'Notifications' },
+  'notifications.noActive': { es: 'No hay tareas activas', en: 'No active tasks' },
+  
+  // File actions
+  'file.remove': { es: 'Eliminar', en: 'Remove' },
+  'file.preview': { es: 'Ver', en: 'Preview' },
+  'file.download': { es: 'Descargar', en: 'Download' },
+  'file.reorder': { es: 'Reordenar', en: 'Reorder' },
+
+  // Navbar & UI
+  'navbar.search': { es: 'Buscar archivos u operaciones...', en: 'Search files or operations...' },
+  'navbar.systemOnline': { es: 'Sistema en línea', en: 'System Online' },
+  'navbar.activeTasks': { es: 'tareas activas', en: 'active tasks' },
+
+  // Intro Banner
+  'intro.title': { es: 'FakeLove PDF Tools', en: 'FakeLove PDF Tools' },
+  'intro.desc': { es: 'Manipulación profesional de PDFs con un toque sarcástico. Sin límites, sin juicios, solo resultados.', en: 'Professional PDF manipulation with a sarcastic twist. No limits, no judgments, just results.' },
+  'intro.tag.merge': { es: 'Fusionar PDF', en: 'PDF Merge' },
+  'intro.tag.split': { es: 'Dividir PDF', en: 'PDF Split' },
+  'intro.tag.image': { es: 'Imagen → PDF', en: 'Image → PDF' },
+  'intro.tag.word': { es: 'Word → PDF', en: 'Word → PDF' },
+  'intro.github': { es: 'Ver en GitHub', en: 'View on GitHub' },
+
+  // History Table
+  'table.file': { es: 'ARCHIVO', en: 'FILE' },
+  'table.operation': { es: 'OPERACIÓN', en: 'OPERATION' },
+  'table.status': { es: 'ESTADO', en: 'STATUS' },
+  'table.time': { es: 'TIEMPO', en: 'TIME' },
+  'table.size': { es: 'TAMAÑO', en: 'SIZE' },
+  'table.actions': { es: 'ACCIONES', en: 'ACTIONS' },
+
+  // Footer
+  'footer.brand': { es: 'Fake Love', en: 'Fake Love' },
+  'footer.subtitle': { es: 'PDF Tools', en: 'PDF Tools' },
+  'footer.tagline': { es: 'Hecho con odio', en: 'Made with hate' },
+  
+  // Trial
+  'trial.label': { es: 'PRUEBA', en: 'TRIAL' },
+  'trial.limitNote': { es: 'Límite de 4.5MB. Archivos ilimitados en servidor propio:', en: '4.5MB limit. Unlimited files on self-hosted server:' },
+  'trial.fileTooLarge': { es: 'Archivo muy grande. El tamaño máximo es 4.5MB.', en: 'File too large. Maximum size is 4.5MB.' },
+  'trial.fileTooLargeNamed': { es: 'El archivo es muy grande. Máximo: 4.5MB', en: 'File too large. Maximum: 4.5MB' },
+  'trial.totalSizeExceeds': { es: 'El tamaño total excede 4.5MB. No se puede procesar en Vercel.', en: 'Total size exceeds 4.5MB. Cannot process on Vercel.' },
+  'trial.versionWarning': { es: 'Versión de prueba: Límite de 4.5MB por archivo en Vercel. Algunos archivos pueden fallar.', en: 'Trial version: 4.5MB per file limit on Vercel. Some files may fail.' },
 }
 
 interface LanguageContextType {

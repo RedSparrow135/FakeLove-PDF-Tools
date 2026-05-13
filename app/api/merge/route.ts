@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PDFDocument } from 'pdf-lib'
 
+const MAX_SIZE = 4.5 * 1024 * 1024 // 4.5MB Vercel limit
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
@@ -11,6 +13,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Need at least 1 file to merge' },
         { status: 400 }
+      )
+    }
+
+    const totalSize = files.reduce((acc, f) => acc + f.size, 0)
+    if (totalSize > MAX_SIZE) {
+      return NextResponse.json(
+        { error: 'El tamaño total excede 4.5MB. Versión demo de Vercel.' },
+        { status: 413 }
+      )
+    }
+
+    const oversized = files.filter(f => f.size > MAX_SIZE)
+    if (oversized.length > 0) {
+      return NextResponse.json(
+        { error: `Archivos muy grandes: ${oversized.map(f => f.name).join(', ')}` },
+        { status: 413 }
       )
     }
 

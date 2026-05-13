@@ -18,7 +18,7 @@ interface FileWithPreview {
 const SUPPORTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp']
 const SUPPORTED_DOC_TYPES = ['application/pdf']
 const ALL_SUPPORTED = [...SUPPORTED_IMAGE_TYPES, ...SUPPORTED_DOC_TYPES]
-const MAX_FILE_SIZE = 4.5 * 1024 * 1024 // 4.5MB - Límite oficial de Vercel
+const MAX_FILE_SIZE = 4.5 * 1024 * 1024
 
 const formatSize = (bytes: number): string => {
   if (bytes < 1024) return `${bytes} B`
@@ -104,12 +104,30 @@ export default function FileUploader({ onFileSelected }: FileUploaderProps) {
     }
   }, [])
 
-  const handleAction = useCallback((action: string) => {
+  const storeFileForTransfer = useCallback(async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer()
+    const base64 = btoa(
+      new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
+    )
+    const fileData = JSON.stringify({
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      data: base64,
+    })
+    const key = `fakelove_file_${Date.now()}`
+    sessionStorage.setItem(key, fileData)
+    return key
+  }, [])
+
+  const handleAction = useCallback(async (action: string) => {
     if (!selectedFile) return
     
     setIsProcessing(true)
     
-    setTimeout(() => {
+    try {
+      const storageKey = await storeFileForTransfer(selectedFile.file)
+      
       if (onFileSelected) {
         onFileSelected(selectedFile.file)
       }
@@ -119,13 +137,16 @@ export default function FileUploader({ onFileSelected }: FileUploaderProps) {
         split: '/split',
         compress: '/compress',
         imagetopdf: '/imagetopdf',
-        convert: '/word',
+        convert: '/more-tools/word',
         preview: selectedFile.isImage ? '/imagetopdf' : '/split',
       }
       
-      window.location.href = `${routes[action]}?file=${encodeURIComponent(selectedFile.file.name)}`
-    }, 500)
-  }, [selectedFile, onFileSelected])
+      window.location.href = `${routes[action]}?f=${encodeURIComponent(storageKey)}`
+    } catch (error) {
+      setIsProcessing(false)
+      console.error('Error transferring file:', error)
+    }
+  }, [selectedFile, onFileSelected, storeFileForTransfer])
 
   const getFileExtension = (filename: string): string => {
     return filename.split('.').pop()?.toUpperCase() || 'FILE'

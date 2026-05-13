@@ -44,33 +44,61 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .logoIcon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
-  border-radius: 10px;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #dc2626, #f43f5e);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.4);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #dc2626, #f43f5e);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
+.logoIcon svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.logoText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .logoTitle {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: var(--theme-primary);
-  letter-spacing: 2px;
+  color: #f9fafb;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
 }
 
 .logoSubtitle {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 0.6rem;
-  color: var(--theme-text-muted);
-  letter-spacing: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  color: #6b7280;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
 }
 
@@ -115,31 +143,6 @@
   opacity: 1;
 }
 
-.navItem span:first-of-type {
-  flex: 1;
-}
-
-.logoText {
-  display: flex;
-  flex-direction: column;
-}
-
-.logoTitle {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #f9fafb;
-  letter-spacing: 0.05em;
-}
-
-.logoSubtitle {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  color: #6b7280;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
 .nav {
   display: flex;
   flex-direction: column;
@@ -148,32 +151,6 @@
 }
 
 .navItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  color: #9ca3af;
-  font-size: 0.875rem;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-}
-
-.navItem:hover {
-  background: rgba(220, 38, 38, 0.1);
-  color: #f9fafb;
-}
-
-.navItem.active {
-  background: rgba(220, 38, 38, 0.15);
-  color: #f9fafb;
-}
-
-.navItem svg {
   opacity: 0.7;
   flex-shrink: 0;
 }
@@ -613,6 +590,102 @@
 
 .quickActions {
   animation: fadeSlideUp 0.6s ease-out 0.1s backwards;
+}
+
+/* ========== INTRO BANNER ========== */
+.introBanner {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(244, 63, 94, 0.08));
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeSlideUp 0.5s ease-out;
+}
+
+.introContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.introIcon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #dc2626, #f43f5e);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
+}
+
+.introText {
+  flex: 1;
+  
+  h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #f9fafb;
+    margin-bottom: 4px;
+  }
+  
+  p {
+    font-size: 0.9rem;
+    color: #9ca3af;
+    line-height: 1.5;
+  }
+}
+
+.introTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.introTag {
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: #d1d5db;
+  letter-spacing: 0.05em;
+}
+
+.introGithub {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #f9fafb;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  align-self: flex-start;
+  transition: all 0.25s ease;
+  
+  svg {
+    fill: #f9fafb;
+    width: 18px;
+    height: 18px;
+  }
+  
+  &:hover {
+    background: #24292e;
+    border-color: #f9fafb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
 }
 
 /* ========== TOOLS GRID ========== */
