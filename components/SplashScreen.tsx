@@ -74,7 +74,7 @@ export default function SplashScreen({ onComplete, minDuration = 3000 }: SplashS
       </div>
 
       <div className={`${styles.content} ${showContent ? styles.visible : ''}`}>
-        <CardiogramECG speed={4} lineColor="#dc2626" glowColor="#f43f5e" />
+        <CardiogramECG speed={5} />
 
         <div className={styles.progressSection}>
           <div className={styles.progressTrack}>

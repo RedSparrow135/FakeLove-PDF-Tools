@@ -22,30 +22,30 @@
   font-weight: 700;
   color: #f9fafb;
   letter-spacing: -0.02em;
-  text-shadow: 0 0 20px rgba(220, 38, 38, 0.15);
+  text-shadow: 0 0 20px rgba(255, 0, 0, 0.15);
   transition: all 0.3s ease;
   
   .logo.hovered & {
-    color: #f9fafb;
-    text-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+    text-shadow: 0 0 25px rgba(255, 0, 0, 0.3);
   }
 }
 
 .love {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
-  color: #dc2626;
+  color: #ff0000;
   letter-spacing: -0.02em;
   text-shadow: 
-    0 0 15px rgba(220, 38, 38, 0.6),
-    0 0 30px rgba(220, 38, 38, 0.3);
+    0 0 15px rgba(255, 0, 0, 0.8),
+    0 0 35px rgba(255, 0, 0, 0.5),
+    0 0 60px rgba(255, 0, 0, 0.3);
   transition: all 0.3s ease;
   
   .logo.hovered & {
     text-shadow: 
-      0 0 20px rgba(220, 38, 38, 0.9),
-      0 0 40px rgba(220, 38, 38, 0.5),
-      0 0 60px rgba(220, 38, 38, 0.3);
+      0 0 25px rgba(255, 0, 0, 1),
+      0 0 50px rgba(255, 0, 0, 0.7),
+      0 0 80px rgba(255, 0, 0, 0.4);
     animation: lovePulse 0.5s ease-in-out infinite;
   }
 }

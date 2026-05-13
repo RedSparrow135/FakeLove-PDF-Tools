@@ -53,7 +53,7 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
     function draw() {
       if (!ctx) return
 
-      const speed = isHovered ? 3.5 : 2.5
+      const speed = isHovered ? 4 : 3
 
       ctx.clearRect(0, 0, width, height)
 
@@ -61,46 +61,47 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
       const yVal = getY(tCycle)
       const newY = baseline + (yVal * amplitude / 30)
 
-      const glowSize = isHovered ? 20 : 14
-      const lineW = isHovered ? 4 : 3.5
+      const glowSize = isHovered ? 25 : 18
 
       ctx.beginPath()
-      ctx.strokeStyle = '#ef4444'
-      ctx.lineWidth = lineW
+      ctx.strokeStyle = '#ff0000'
+      ctx.lineWidth = 4.5
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
       ctx.shadowBlur = glowSize
-      ctx.shadowColor = '#dc2626'
+      ctx.shadowColor = '#ff0000'
       
       ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
       ctx.lineTo(x, newY)
       ctx.stroke()
 
       ctx.beginPath()
-      ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)'
-      ctx.lineWidth = lineW + 4
-      ctx.shadowBlur = glowSize * 1.5
+      ctx.strokeStyle = '#ff3333'
+      ctx.lineWidth = 3.5
+      ctx.shadowBlur = glowSize * 0.7
+      ctx.shadowColor = '#ff0000'
       ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
       ctx.lineTo(x, newY)
       ctx.stroke()
 
       ctx.beginPath()
-      ctx.strokeStyle = 'rgba(248, 113, 113, 0.4)'
-      ctx.lineWidth = lineW + 10
-      ctx.shadowBlur = glowSize * 2.5
+      ctx.strokeStyle = '#ff6666'
+      ctx.lineWidth = 2.5
+      ctx.shadowBlur = glowSize * 0.4
+      ctx.shadowColor = '#ff0000'
       ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
       ctx.lineTo(x, newY)
       ctx.stroke()
 
       ctx.beginPath()
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+      ctx.strokeStyle = '#ffffff'
       ctx.lineWidth = 1.5
       ctx.shadowBlur = 0
       ctx.moveTo(x === 0 ? 0 : x - speed, prevY)
       ctx.lineTo(x, newY)
       ctx.stroke()
 
-      ctx.clearRect(x + speed + 1, 0, 40, height)
+      ctx.clearRect(x + speed + 2, 0, 50, height)
 
       prevY = newY
       x += speed
@@ -108,7 +109,7 @@ export default function AnimatedLogo({ size = 'medium' }: AnimatedLogoProps) {
 
       if (x > width) {
         x = 0
-        ctx.clearRect(0, 0, 5, height)
+        ctx.clearRect(0, 0, 10, height)
       }
 
       requestAnimationFrame(draw)

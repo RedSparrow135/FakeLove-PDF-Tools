@@ -6,16 +6,9 @@ import styles from './CardiogramECG.module.scss'
 interface CardiogramECGProps {
   className?: string
   speed?: number
-  lineColor?: string
-  glowColor?: string
 }
 
-export default function CardiogramECG({ 
-  className = '', 
-  speed = 3.5,
-  lineColor = '#dc2626',
-  glowColor = '#f43f5e'
-}: CardiogramECGProps) {
+export default function CardiogramECG({ className = '', speed = 4 }: CardiogramECGProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [currentPattern, setCurrentPattern] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
@@ -50,7 +43,7 @@ export default function CardiogramECG({
     ctx.clearRect(0, 0, width, height)
 
     const current = patterns[currentPattern]
-    const effectiveSpeed = isHovered ? speed * 1.6 : speed
+    const effectiveSpeed = isHovered ? speed * 1.8 : speed
 
     if (!canvas.dataset.lastX) {
       canvas.dataset.lastX = '0'
@@ -81,46 +74,47 @@ export default function CardiogramECG({
     const yVal = getY(tCycle)
     const newY = baseline + (yVal * amplitude / 30)
 
-    const glowSize = isHovered ? 25 : 18
-    const lineW = isHovered ? 4.5 : 4
+    const glowSize = isHovered ? 30 : 22
 
     ctx.beginPath()
-    ctx.strokeStyle = '#ef4444'
-    ctx.lineWidth = lineW
+    ctx.strokeStyle = '#ff0000'
+    ctx.lineWidth = 5
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
     ctx.shadowBlur = glowSize
-    ctx.shadowColor = '#dc2626'
+    ctx.shadowColor = '#ff0000'
     
     ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
     ctx.beginPath()
-    ctx.strokeStyle = 'rgba(239, 68, 68, 0.7)'
-    ctx.lineWidth = lineW + 4
-    ctx.shadowBlur = glowSize * 1.5
+    ctx.strokeStyle = '#ff3333'
+    ctx.lineWidth = 4
+    ctx.shadowBlur = glowSize * 0.8
+    ctx.shadowColor = '#ff0000'
     ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
     ctx.beginPath()
-    ctx.strokeStyle = 'rgba(248, 113, 113, 0.5)'
-    ctx.lineWidth = lineW + 12
-    ctx.shadowBlur = glowSize * 2.5
+    ctx.strokeStyle = '#ff6666'
+    ctx.lineWidth = 3
+    ctx.shadowBlur = glowSize * 0.5
+    ctx.shadowColor = '#ff0000'
     ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
     ctx.beginPath()
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
+    ctx.strokeStyle = '#ffffff'
     ctx.lineWidth = 1.5
     ctx.shadowBlur = 0
     ctx.moveTo(x === 0 ? 0 : x - effectiveSpeed, prevY)
     ctx.lineTo(x, newY)
     ctx.stroke()
 
-    ctx.clearRect(x + effectiveSpeed + 1, 0, 60, height)
+    ctx.clearRect(x + effectiveSpeed + 2, 0, 80, height)
 
     canvas.dataset.lastX = (x + effectiveSpeed).toString()
     canvas.dataset.time = (time + 1).toString()
@@ -129,11 +123,11 @@ export default function CardiogramECG({
     if (x > width) {
       x = 0
       canvas.dataset.lastX = '0'
-      ctx.clearRect(0, 0, 5, height)
+      ctx.clearRect(0, 0, 10, height)
     }
 
     requestAnimationFrame(draw)
-  }, [currentPattern, speed, isHovered, lineColor, glowColor])
+  }, [currentPattern, speed, isHovered])
 
   useEffect(() => {
     const animationId = requestAnimationFrame(draw)
